@@ -12,8 +12,8 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 public class PaymentDTO {
     private Long paymentID;
-    private Long orderID;
+    private long orderID;  // OrderEntity의 orderID를 참조
     private String method;
     private BigDecimal amount;
-    private int completed; // 기본값 0
+    private int completed;
 }
