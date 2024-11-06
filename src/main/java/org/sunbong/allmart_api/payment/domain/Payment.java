@@ -10,7 +10,7 @@ import org.sunbong.allmart_api.common.domain.BaseEntity;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "payment")
+@Table(name = "tbl_payment")
 @Getter
 @Builder
 @AllArgsConstructor
