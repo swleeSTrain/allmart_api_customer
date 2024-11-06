@@ -1,4 +1,4 @@
-package org.sunbong.allmart_api.phoneNumberLogin;
+package org.sunbong.allmart_api.customer.domain;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
