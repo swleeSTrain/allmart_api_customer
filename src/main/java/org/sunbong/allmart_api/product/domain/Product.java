@@ -11,11 +11,11 @@ import java.util.List;
 
 @Entity
 @Table(name = "tbl_product")
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@ToString(callSuper = true)
+@ToString(callSuper = true, exclude = {"attachFiles"})
 public class Product extends BaseEntity {
 
     @Id
@@ -36,5 +36,9 @@ public class Product extends BaseEntity {
     @BatchSize(size = 100)
     @Builder.Default
     private List<ProductImage> attachFiles = new ArrayList<>();
+
+    public void addFile(String filename) {
+        attachFiles.add(new ProductImage(filename, attachFiles.size()));
+    }
 
 }
