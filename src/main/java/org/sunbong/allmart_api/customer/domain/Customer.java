@@ -22,8 +22,8 @@ public class Customer extends BaseEntity {
     private Long customerID;
 
     @NotNull
-    @Column(length = 11)
-    private int phoneNumber;
+    @Column(columnDefinition = "CHAR(11)")
+    private String phoneNumber;
 
     @NotNull
     @Column(length = 30)
