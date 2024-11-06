@@ -34,6 +34,7 @@ public class Product extends BaseEntity {
     @ElementCollection
     @CollectionTable(name = "tbl_product_image")
     @BatchSize(size = 100)
+    @Builder.Default
     private List<ProductImage> attachFiles = new ArrayList<>();
 
 }
