@@ -16,6 +16,7 @@ import org.sunbong.allmart_api.common.domain.BaseEntity;
 @Table(name = "tbl_customer")
 public class Customer extends BaseEntity {
 
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long customerID;
