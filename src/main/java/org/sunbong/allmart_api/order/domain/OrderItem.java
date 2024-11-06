@@ -2,6 +2,7 @@ package org.sunbong.allmart_api.order.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.sunbong.allmart_api.product.domain.Product;
 
 import java.math.BigDecimal;
 
@@ -11,7 +12,13 @@ import java.math.BigDecimal;
 @Getter
 @Builder
 @ToString
-@Table(name = "tbl_orderItem")
+@Table(
+        name = "tbl_orderItem",
+        indexes = {
+                @Index(name = "idx_orderID", columnList = "orderID"),      // 주문 ID 인덱스
+                @Index(name = "idx_productID", columnList = "productID")   // 제품 ID 인덱스
+        }
+)
 public class OrderItem {
 
     @Id
@@ -21,13 +28,19 @@ public class OrderItem {
     @Column(columnDefinition = "SMALLINT", nullable = false)
     private short quantity;
 
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal unitPrice;
+
+
     // Order와의 Many-to-One 관계 설정
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "orderID", nullable = false)
     private OrderEntity order;
 
-    @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal unitPrice;
-
     // Product와의 Many-to-One 관계 설정
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "productID", nullable = false)
+    private Product product;
+
+
 }
