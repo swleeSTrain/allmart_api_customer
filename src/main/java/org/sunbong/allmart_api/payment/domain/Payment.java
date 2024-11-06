@@ -6,13 +6,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.sunbong.allmart_api.common.domain.BaseEntity;
+import org.sunbong.allmart_api.order.domain.OrderEntity;
 
 import java.math.BigDecimal;
 
 @Entity
 @Table(name = "tbl_payment")
 @Getter
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
 public class Payment extends BaseEntity {
@@ -21,6 +22,10 @@ public class Payment extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(columnDefinition = "BIGINT")
     private long paymentID;
+
+    @OneToOne
+    @JoinColumn(name = "orderID", nullable = false, columnDefinition = "BIGINT")
+    private OrderEntity order;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
