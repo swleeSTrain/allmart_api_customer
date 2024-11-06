@@ -3,6 +3,7 @@ package org.sunbong.allmart_api.product.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.BatchSize;
+import org.sunbong.allmart_api.common.domain.BaseEntity;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -10,12 +11,12 @@ import java.util.List;
 
 @Entity
 @Table(name = "tbl_product")
-@ToString
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class Product {
+@ToString(callSuper = true)
+public class Product extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
