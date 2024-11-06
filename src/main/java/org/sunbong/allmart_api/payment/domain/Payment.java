@@ -30,5 +30,6 @@ public class Payment extends BaseEntity {
     private BigDecimal amount; // BigDecimal을 그대로 사용
 
     @Column(nullable = false, columnDefinition = "int default 0") // 기본값을 명확히 설정하기 위해
+    @Builder.Default
     private int completed = 0; // 기본값을 0으로 설정
 }
