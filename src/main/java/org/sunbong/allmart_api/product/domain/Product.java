@@ -11,11 +11,11 @@ import java.util.List;
 
 @Entity
 @Table(name = "tbl_product")
-@ToString
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@ToString(callSuper = true)
 public class Product extends BaseEntity {
 
     @Id
