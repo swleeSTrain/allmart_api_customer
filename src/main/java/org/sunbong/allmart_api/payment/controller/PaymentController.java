@@ -1,6 +1,7 @@
 package org.sunbong.allmart_api.payment.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.sunbong.allmart_api.payment.dto.PaymentDTO;
@@ -9,55 +10,31 @@ import org.sunbong.allmart_api.payment.service.PaymentService;
 
 @RestController
 @RequestMapping("/api/payments")
+@RequiredArgsConstructor
 public class PaymentController {
 
-    @Autowired
-    private PaymentService paymentService;
+    private final PaymentService paymentService;
 
     // 결제 생성
     @PostMapping
-    public ResponseEntity<PaymentDTO> createPayment(@RequestBody PaymentDTO paymentDTO) {
-        Payment payment = paymentService.createPayment(paymentDTO);
-        PaymentDTO responseDTO = new PaymentDTO(
-                payment.getPaymentID(),
-                payment.getOrder().getOrderID(),
-                payment.getMethod().name(),
-                payment.getAmount(),
-                payment.getCompleted()
-        );
-        return ResponseEntity.ok(responseDTO);
-    }
-
-    // 특정 결제 조회
-    @GetMapping("/{paymentID}")
-    public ResponseEntity<PaymentDTO> getPaymentById(@PathVariable Long paymentID) {
-        return paymentService.getPaymentById(paymentID)
-                .map(payment -> new PaymentDTO(
-                        payment.getPaymentID(),
-                        payment.getOrder().getOrderID(),
-                        payment.getMethod().name(),
-                        payment.getAmount(),
-                        payment.getCompleted()
-                ))
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    // 결제 완료 처리
-    @PutMapping("/{paymentID}/complete")
-    public ResponseEntity<PaymentDTO> completePayment(@PathVariable Long paymentID) {
+    public ResponseEntity<?> createPayment(@RequestBody PaymentDTO paymentDTO) {
         try {
-            Payment payment = paymentService.completePayment(paymentID);
-            PaymentDTO responseDTO = new PaymentDTO(
-                    payment.getPaymentID(),
-                    payment.getOrder().getOrderID(),
-                    payment.getMethod().name(),
-                    payment.getAmount(),
-                    payment.getCompleted()
-            );
-            return ResponseEntity.ok(responseDTO);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
+            // Payment 객체 생성
+            Payment payment = paymentService.createPayment(paymentDTO);
+
+            // Payment 객체를 PaymentDTO로 변환하여 응답
+            PaymentDTO responseDTO = PaymentDTO.builder()
+                    .paymentID(payment.getPaymentID())
+                    .orderID(payment.getOrder().getOrderID())
+                    .method(payment.getMethod().name())
+                    .amount(payment.getAmount())
+                    .completed(payment.getCompleted())
+                    .build();
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
+        } catch (Exception e) {
+            // 에러 메시지를 자세히 반환
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e.getMessage());
         }
     }
 }

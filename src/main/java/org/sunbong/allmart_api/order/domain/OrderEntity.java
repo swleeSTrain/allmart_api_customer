@@ -7,6 +7,7 @@ import org.sunbong.allmart_api.common.domain.BaseEntity;
 import org.sunbong.allmart_api.customer.domain.Customer;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
 @AllArgsConstructor
@@ -38,5 +39,9 @@ public class OrderEntity extends BaseEntity {
 
     @Column(nullable = false)
     private int notification;
+
+    @Builder.Default
+    @Column(nullable = false)
+    private LocalDateTime orderDate = LocalDateTime.now(); // 새로운 주문 날짜 필드 추가
 
 }
