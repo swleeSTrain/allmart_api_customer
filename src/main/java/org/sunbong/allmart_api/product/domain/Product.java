@@ -25,7 +25,7 @@ public class Product extends BaseEntity {
     @Column(length = 100)
     private String name;
 
-    @Column(length = 50)
+    @Column(length = 50, unique = true, nullable = false)  // 유니크 및 Not Null 조건 추가
     private String sku;
 
     @Column(precision = 10, scale = 2)  // 10자리 숫자 중 소수점 이하 2자리까지 허용

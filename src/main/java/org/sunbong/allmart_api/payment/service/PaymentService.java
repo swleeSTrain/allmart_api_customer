@@ -1,10 +1,8 @@
 package org.sunbong.allmart_api.payment.service;
 
-
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import org.sunbong.allmart_api.order.domain.OrderEntity;
 import org.sunbong.allmart_api.order.repository.OrderRepository;
 import org.sunbong.allmart_api.payment.domain.Payment;
@@ -12,20 +10,18 @@ import org.sunbong.allmart_api.payment.domain.PaymentMethod;
 import org.sunbong.allmart_api.payment.dto.PaymentDTO;
 import org.sunbong.allmart_api.payment.repository.PaymentRepository;
 
-
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class PaymentService {
 
-    @Autowired
-    private PaymentRepository paymentRepository;
+    private final PaymentRepository paymentRepository;
+    private final OrderRepository orderRepository;
 
-    @Autowired
-    private OrderRepository orderRepository;
-
+    @Transactional
     public Payment createPayment(PaymentDTO paymentDTO) {
-        // OrderEntity를 orderID로 조회
+        // PaymentDTO에서 orderID를 가져와 OrderEntity 조회
         OrderEntity order = orderRepository.findById(paymentDTO.getOrderID())
                 .orElseThrow(() -> new RuntimeException("Order not found"));
 
@@ -40,16 +36,28 @@ public class PaymentService {
         return paymentRepository.save(payment);
     }
 
-    public Optional<Payment> getPaymentById(Long paymentID) {
-        return paymentRepository.findById(paymentID);
+    public Optional<PaymentDTO> getPaymentById(Long paymentID) {
+        return paymentRepository.findById(paymentID)
+                .map(this::convertToDTO);
     }
 
     @Transactional
-    public Payment completePayment(Long paymentID) {
+    public PaymentDTO completePayment(Long paymentID) {
         Payment payment = paymentRepository.findById(paymentID)
                 .orElseThrow(() -> new RuntimeException("Payment not found"));
 
-        payment = payment.toBuilder().completed(1).build(); // 새로운 Payment 인스턴스 생성
-        return paymentRepository.save(payment);
+        payment = payment.toBuilder().completed(1).build();
+        paymentRepository.save(payment);
+        return convertToDTO(payment);
+    }
+
+    private PaymentDTO convertToDTO(Payment payment) {
+        return PaymentDTO.builder()
+                .paymentID(payment.getPaymentID())
+                .orderID(payment.getOrder().getOrderID()) // OrderEntity의 orderID 참조
+                .method(payment.getMethod().name())
+                .amount(payment.getAmount())
+                .completed(payment.getCompleted())
+                .build();
     }
 }
