@@ -24,6 +24,7 @@ import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hibernate.validator.internal.util.Contracts.assertTrue;
 import static org.junit.jupiter.api.Assertions.*;
@@ -48,7 +49,7 @@ public class ProductRepositoryTest {
     @Test
     public void testRead() {
 
-        long productID = 6L;
+        long productID = 1L;
 
         ProductReadDTO productReadDTO = productRepository.readById(productID);
 
@@ -56,7 +57,7 @@ public class ProductRepositoryTest {
 
         // 검증
         assertNotNull(productReadDTO, "ProductReadDTO should not be null");
-        assertEquals(6L, productReadDTO.getProductID(), "Product ID should match");
+        assertEquals(1L, productReadDTO.getProductID(), "Product ID should match");
         assertNotNull(productReadDTO.getName(), "Product name should not be null");
         assertNotNull(productReadDTO.getPrice(), "Product price should not be null");
         assertTrue(productReadDTO.getAttachFiles().size() > 0, "Attach files should be present");
@@ -101,7 +102,14 @@ public class ProductRepositoryTest {
     @Test
     @Rollback(false)
     public void testDelete() {
+
         Long productID = 101L;
+
+        // Product와 연결된 CategoryProduct 엔티티를 먼저 삭제
+        List<CategoryProduct> categoryProducts = categoryProductRepository.findByProductProductID(productID);
+        categoryProductRepository.deleteAll(categoryProducts);
+
+        // Product 삭제
         productRepository.deleteById(productID);
 
         boolean exists = productRepository.findById(productID).isPresent();
@@ -110,66 +118,68 @@ public class ProductRepositoryTest {
     }
 
     @Test
-    @Rollback(false) // 롤백 방지
-    public void testUpdate() throws Exception {
+    @Rollback(false)
+    public void testEdit() throws Exception {
+        log.info("Test Edit Product");
 
-        log.info("Test Update Product");
-
-        long productID = 101L;
-
+        long productID = 1L;
         Product initialProduct = productRepository.findById(productID)
                 .orElseThrow(() -> new IllegalArgumentException("Product not found"));
 
-        // 수정할 파일 준비 (가짜 MultipartFile 생성)
         Path sampleImagePath = Paths.get("src/test/resources/sample.jpg");
-
-        MockMultipartFile mockFile1 = new MockMultipartFile(
-                "file",
-                "updatedImage1.jpg",
-                "image/jpeg",
-                new FileInputStream(sampleImagePath.toFile())
-        );
-
-        MockMultipartFile mockFile2 = new MockMultipartFile(
-                "file",
-                "updatedImage2.jpg",
-                "image/jpeg",
-                new FileInputStream(sampleImagePath.toFile())
-        );
-
+        MockMultipartFile mockFile1 = new MockMultipartFile("file", "updatedImage1.jpg", "image/jpeg", new FileInputStream(sampleImagePath.toFile()));
+        MockMultipartFile mockFile2 = new MockMultipartFile("file", "updatedImage2.jpg", "image/jpeg", new FileInputStream(sampleImagePath.toFile()));
         List<String> savedFileNames = fileUtil.saveFiles(List.of(mockFile1, mockFile2));
 
-        // 상품 수정 DTO 생성
         ProductEditDTO productEditDTO = ProductEditDTO.builder()
-                .name("수정된 상품명")
-                .sku("NEW-SKU")
+                .name("포켓몬")
+                .sku("NEW-SKU2")
                 .price(BigDecimal.valueOf(3000))
                 .files(List.of(mockFile1, mockFile2))
+                .categoryName("포켓몬")
                 .build();
 
-        // 기존 상품을 수정된 정보로 업데이트
         Product updatedProduct = productEditDTO.toUpdatedProduct(initialProduct);
 
-        // 저장된 파일 이름들을 추가 (중복 제거)
         savedFileNames.forEach(savedFileName -> {
-            boolean exists = updatedProduct.getAttachFiles().stream()
-                    .anyMatch(f -> f.getImageURL().equals(savedFileName));
-            if (!exists) {
+            if (updatedProduct.getAttachFiles().stream().noneMatch(f -> f.getImageURL().equals(savedFileName))) {
                 updatedProduct.addFile(savedFileName);
             }
         });
 
-        // 업데이트된 상품 저장
+        // 카테고리 업데이트 처리 (기존 CategoryProduct 업데이트)
+        if (productEditDTO.getCategoryName() != null) {
+            Category newCategory = categoryRepository.findByName(productEditDTO.getCategoryName())
+                    .orElseThrow(() -> new IllegalArgumentException("카테고리가 존재하지 않습니다."));
+
+            // 현재 Product에 해당하는 CategoryProduct를 가져옴
+            List<CategoryProduct> categoryProducts = categoryProductRepository.findByProductProductID(updatedProduct.getProductID());
+
+            if (!categoryProducts.isEmpty()) {
+                // 기존 CategoryProduct의 카테고리를 새로운 카테고리로 업데이트
+                CategoryProduct categoryProduct = categoryProducts.get(0);  // 여러 개 중 첫 번째 것만 변경하는 경우
+                categoryProduct = categoryProduct.toBuilder().category(newCategory).build();
+                categoryProductRepository.save(categoryProduct);
+            } else {
+                // 기존 매핑이 없는 경우 새로운 CategoryProduct 생성
+                CategoryProduct categoryProduct = CategoryProduct.builder()
+                        .product(updatedProduct)
+                        .category(newCategory)
+                        .build();
+                categoryProductRepository.save(categoryProduct);
+            }
+        }
+
+
         productRepository.save(updatedProduct);
 
-        // 저장된 상품을 확인하고 검증
         Product savedProduct = productRepository.findById(updatedProduct.getProductID()).orElseThrow();
         assertNotNull(savedProduct, "Product should be saved successfully");
-        assertEquals("수정된 상품명", savedProduct.getName(), "Product name should match");
-        assertEquals("NEW-SKU", savedProduct.getSku(), "Product SKU should match");
+        assertEquals("포켓몬", savedProduct.getName(), "Product name should match");
+        assertEquals("NEW-SKU2", savedProduct.getSku(), "Product SKU should match");
         assertEquals(BigDecimal.valueOf(3000), savedProduct.getPrice(), "Product price should match");
-
     }
+
 
 
     @Test
@@ -189,6 +199,11 @@ public class ProductRepositoryTest {
                 new FileInputStream(sampleImagePath.toFile())
         );
 
+        // 카테고리 검색 또는 예외 처리
+        String categoryName = "식료품";
+        Category category = categoryRepository.findByName(categoryName)
+                .orElseThrow(() -> new IllegalArgumentException("카테고리가 존재하지 않습니다."));
+
         for (int i = 0; i < 100; i++) {
 
             List<String> savedFileNames = fileUtil.saveFiles(List.of(mockFile1));
@@ -196,7 +211,7 @@ public class ProductRepositoryTest {
             // Product 엔티티 생성 및 파일명 추가
             Product product = Product.builder()
                     .name("테스트 상품 " + (i + 1))
-                    .sku("APL-TEST-1KG")
+                    .sku("APL-TEST-1KG " + (i + 1))
                     .price(BigDecimal.valueOf(3000))
                     .build();
 
@@ -204,7 +219,14 @@ public class ProductRepositoryTest {
             savedFileNames.forEach(product::addFile);
 
             // Product 저장
-            productRepository.save(product);
+            product = productRepository.save(product);
+
+            // CategoryProduct를 생성해 Product와 Category 연결
+            CategoryProduct categoryProduct = CategoryProduct.builder()
+                    .product(product)
+                    .category(category)
+                    .build();
+            categoryProductRepository.save(categoryProduct);
         }
 
         // 검증
@@ -214,7 +236,7 @@ public class ProductRepositoryTest {
     // 한 개만 추가
     @Test
     @Rollback(false) // 롤백 방지
-    public void testOneRegisterWithCategory() throws Exception {
+    public void testOneRegister() throws Exception {
 
         log.info("Test One Register with Category");
 

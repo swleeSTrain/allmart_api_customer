@@ -25,7 +25,7 @@ public class Product extends BaseEntity {
     @Column(length = 100)
     private String name;
 
-    @Column(length = 50)
+    @Column(length = 50, unique = true, nullable = false)
     private String sku;
 
     @Column(precision = 10, scale = 2)

@@ -53,11 +53,9 @@ public class CategoryRepositoryTest {
         assertThat(savedCategoryProduct.getCategory().getName()).isEqualTo("식료품");
     }
 
-
-
     @Test
     @Rollback(false)
-    public void testAddCategory() {
+    public void testAddCategory1() {
         // Given
         CategoryDTO categoryDTO = new CategoryDTO();
         categoryDTO.setName("식료품");
@@ -76,6 +74,33 @@ public class CategoryRepositoryTest {
             assertThat(savedCategory).isNotNull();
             assertThat(savedCategory.getCategoryID()).isNotNull();
             assertThat(savedCategory.getName()).isEqualTo("식료품");
+        } else {
+            System.out.println("이미 존재하는 카테고리입니다.");
+        }
+    }
+
+
+    @Test
+    @Rollback(false)
+    public void testAddCategory() {
+        // Given
+        CategoryDTO categoryDTO = new CategoryDTO();
+        categoryDTO.setName("포켓몬");
+
+        // 카테고리 이름으로 중복 체크
+        if (!categoryRepository.findByName(categoryDTO.getName()).isPresent()) {
+            // CategoryDTO를 Category 엔티티로 변환
+            Category category = Category.builder()
+                    .name(categoryDTO.getName())
+                    .build();
+
+            // When
+            Category savedCategory = categoryRepository.save(category);
+
+            // Then
+            assertThat(savedCategory).isNotNull();
+            assertThat(savedCategory.getCategoryID()).isNotNull();
+            assertThat(savedCategory.getName()).isEqualTo("포켓몬");
         } else {
             System.out.println("이미 존재하는 카테고리입니다.");
         }
