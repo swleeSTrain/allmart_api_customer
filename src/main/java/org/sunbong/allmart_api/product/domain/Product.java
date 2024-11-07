@@ -11,11 +11,11 @@ import java.util.List;
 
 @Entity
 @Table(name = "tbl_product")
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@ToString(callSuper = true)
+@ToString(callSuper = true, exclude = {"attachFiles"})
 public class Product extends BaseEntity {
 
     @Id
@@ -25,7 +25,7 @@ public class Product extends BaseEntity {
     @Column(length = 100)
     private String name;
 
-    @Column(length = 50)
+    @Column(length = 50, unique = true, nullable = false)  // 유니크 및 Not Null 조건 추가
     private String sku;
 
     @Column(precision = 10, scale = 2)  // 10자리 숫자 중 소수점 이하 2자리까지 허용
@@ -37,4 +37,18 @@ public class Product extends BaseEntity {
     @Builder.Default
     private List<ProductImage> attachFiles = new ArrayList<>();
 
+    public void addFile(String filename) {
+        attachFiles.add(new ProductImage(filename, attachFiles.size()));
+    }
+
+    public void removeFile(String filename) {
+        attachFiles.removeIf(image -> image.getImageURL().equals(filename));
+    }
+
+    // 파일 목록 업데이트 (파일 추가 및 삭제 처리)
+    public void updateFiles(List<String> filesToAdd, List<String> filesToDelete) {
+        filesToDelete.forEach(this::removeFile);
+        filesToAdd.forEach(this::addFile);
+    }
 }
+
