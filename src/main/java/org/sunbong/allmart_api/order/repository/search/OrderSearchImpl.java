@@ -28,11 +28,14 @@ public class OrderSearchImpl extends QuerydslRepositorySupport implements  Order
     @Override
     public PageResponseDTO<OrderDTO> searchOrders(String status, String customerInfo, PageRequestDTO pageRequestDTO) {
 
+        log.info("searchOrders called with status: {}, customerInfo: {}", status, customerInfo);
+
         // Pageable 객체 생성 (정렬 설정 없음)
         Pageable pageable = PageRequest.of(
                 pageRequestDTO.getPage() - 1,
                 pageRequestDTO.getSize()
         );
+        log.info("Pageable created with page: {}, size: {}", pageRequestDTO.getPage(), pageRequestDTO.getSize());
 
         QOrderEntity orderEntity = QOrderEntity.orderEntity;
         QCustomer customer = QCustomer.customer;
@@ -48,7 +51,9 @@ public class OrderSearchImpl extends QuerydslRepositorySupport implements  Order
             try {
                 OrderStatus orderStatus = OrderStatus.valueOf(status.toUpperCase());
                 builder.and(orderEntity.status.eq(orderStatus));
+                log.info("Added order status filter: {}", orderStatus);
             } catch (IllegalArgumentException e) {
+                log.error("Invalid status value: {}", status);
                 throw new IllegalArgumentException("Invalid status value: " + status);
             }
         }
@@ -59,6 +64,7 @@ public class OrderSearchImpl extends QuerydslRepositorySupport implements  Order
             customerCondition.or(customer.name.containsIgnoreCase(customerInfo)); // 고객명 검색
             customerCondition.or(customer.phoneNumber.containsIgnoreCase(customerInfo)); // 고객 전화번호 검색
             builder.and(customerCondition);
+            log.info("Added customer info filter with name or phone number containing: {}", customerInfo);
         }
 
         query.where(builder);
@@ -70,9 +76,11 @@ public class OrderSearchImpl extends QuerydslRepositorySupport implements  Order
         OrderSpecifier<?> orderByModifiedDate = orderEntity.modifiedDate.desc();
 
         query.orderBy(orderPending, orderByCreatedDate, orderByModifiedDate);
+        log.info("Query ordered by status, createdDate, modifiedDate");
 
         // 페이징 처리
         this.getQuerydsl().applyPagination(pageable, query);
+        log.info("Pagination applied with pageable: {}", pageable);
 
         // DTO로 변환하여 조회
         JPQLQuery<OrderDTO> dtoJPQLQuery = query.select(
@@ -86,13 +94,16 @@ public class OrderSearchImpl extends QuerydslRepositorySupport implements  Order
         );
 
         List<OrderDTO> dtoList = dtoJPQLQuery.fetch();
+        log.info("Fetched {} results", dtoList.size());
 
         if (dtoList.isEmpty()) {
+            log.info("No results found, returning empty PageResponseDTO");
             return new PageResponseDTO<>(Collections.emptyList(), pageRequestDTO, 0);
         }
 
         // 전체 데이터 개수 계산
         long total = dtoJPQLQuery.fetchCount();
+        log.info("Total count fetched: {}", total);
 
         // PageResponseDTO 생성 및 반환
         return PageResponseDTO.<OrderDTO>withAll()
@@ -101,5 +112,6 @@ public class OrderSearchImpl extends QuerydslRepositorySupport implements  Order
                 .pageRequestDTO(pageRequestDTO)
                 .build();
     }
+
 
 }
