@@ -7,8 +7,11 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.sunbong.allmart_api.common.dto.PageRequestDTO;
 import org.sunbong.allmart_api.common.dto.PageResponseDTO;
+import org.sunbong.allmart_api.product.dto.ProductAddDTO;
+import org.sunbong.allmart_api.product.dto.ProductEditDTO;
 import org.sunbong.allmart_api.product.dto.ProductListDTO;
 import org.sunbong.allmart_api.product.dto.ProductReadDTO;
+import org.sunbong.allmart_api.product.service.ProductService;
 
 @RestController
 @RequestMapping("/api/v1/product")

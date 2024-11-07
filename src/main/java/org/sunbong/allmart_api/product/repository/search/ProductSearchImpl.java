@@ -10,6 +10,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
+import org.sunbong.allmart_api.category.domain.CategoryProduct;
+import org.sunbong.allmart_api.category.domain.QCategory;
+import org.sunbong.allmart_api.category.domain.QCategoryProduct;
 import org.sunbong.allmart_api.common.dto.PageRequestDTO;
 import org.sunbong.allmart_api.common.dto.PageResponseDTO;
 import org.sunbong.allmart_api.product.domain.Product;
@@ -89,18 +92,20 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
                 .build();
     }
 
-
-
     public ProductReadDTO readById(Long productID) {
 
         log.info("-------------------read----------");
 
+        QCategoryProduct categoryProduct = QCategoryProduct.categoryProduct;
         QProduct product = QProduct.product;
-        QProductImage attachFile = QProductImage.productImage; // QProductImage 객체 추가
+        QProductImage attachFile = QProductImage.productImage;
+        QCategory category = QCategory.category;
 
-        // fetchJoin으로 Product와 관련된 attachFiles를 한 번에 조회
-        Product result = from(product)
-                .leftJoin(product.attachFiles, attachFile).fetchJoin() // fetchJoin을 추가하여 쿼리 한 개로 병합
+        // CategoryProduct를 기준으로 Product, attachFiles, Category를 모두 leftJoin으로 병합
+        CategoryProduct result = from(categoryProduct)
+                .leftJoin(categoryProduct.product, product).fetchJoin() // Product 병합
+                .leftJoin(product.attachFiles, attachFile).fetchJoin() // Product의 첨부 파일 병합
+                .leftJoin(categoryProduct.category, category).fetchJoin() // Category 병합
                 .where(product.productID.eq(productID))
                 .fetchOne();
 
@@ -108,21 +113,28 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
             return null;
         }
 
-        // DTO 변환 (attachFiles의 파일 이름을 문자열 리스트로 변환)
-        List<String> attachFiles = result.getAttachFiles().stream()
+        // 파일 이름 리스트 생성
+        List<String> attachFiles = result.getProduct().getAttachFiles().stream()
                 .map(file -> file.getImageURL())
                 .collect(Collectors.toList());
 
+        // Category 이름 가져오기
+        String categoryName = result.getCategory().getName();
+
         return ProductReadDTO.builder()
-                .productID(result.getProductID())
-                .name(result.getName())
-                .sku(result.getSku())
-                .price(result.getPrice())
+                .productID(result.getProduct().getProductID())
+                .name(result.getProduct().getName())
+                .sku(result.getProduct().getSku())
+                .price(result.getProduct().getPrice())
                 .attachFiles(attachFiles)
-                .createdDate(result.getCreatedDate())
-                .modifiedDate(result.getModifiedDate())
+                .categoryName(categoryName) // 카테고리 이름 추가
+                .createdDate(result.getProduct().getCreatedDate())
+                .modifiedDate(result.getProduct().getModifiedDate())
                 .build();
     }
+
+
+
 
 
 }

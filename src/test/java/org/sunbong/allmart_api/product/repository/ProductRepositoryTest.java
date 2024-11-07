@@ -7,10 +7,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
+import org.sunbong.allmart_api.category.domain.Category;
+import org.sunbong.allmart_api.category.domain.CategoryProduct;
+import org.sunbong.allmart_api.category.repository.CategoryProductRepository;
+import org.sunbong.allmart_api.category.repository.CategoryRepository;
 import org.sunbong.allmart_api.common.dto.PageRequestDTO;
 import org.sunbong.allmart_api.common.dto.PageResponseDTO;
 import org.sunbong.allmart_api.common.util.CustomFileUtil;
 import org.sunbong.allmart_api.product.domain.Product;
+import org.sunbong.allmart_api.product.dto.ProductEditDTO;
 import org.sunbong.allmart_api.product.dto.ProductListDTO;
 import org.sunbong.allmart_api.product.dto.ProductReadDTO;
 
@@ -32,12 +37,18 @@ public class ProductRepositoryTest {
     private ProductRepository productRepository;
 
     @Autowired
+    private CategoryRepository categoryRepository;
+
+    @Autowired
+    private CategoryProductRepository categoryProductRepository;
+
+    @Autowired
     private CustomFileUtil fileUtil;
 
     @Test
     public void testRead() {
 
-        long productID = 101L;
+        long productID = 6L;
 
         ProductReadDTO productReadDTO = productRepository.readById(productID);
 
@@ -45,7 +56,7 @@ public class ProductRepositoryTest {
 
         // 검증
         assertNotNull(productReadDTO, "ProductReadDTO should not be null");
-        assertEquals(101L, productReadDTO.getProductID(), "Product ID should match");
+        assertEquals(6L, productReadDTO.getProductID(), "Product ID should match");
         assertNotNull(productReadDTO.getName(), "Product name should not be null");
         assertNotNull(productReadDTO.getPrice(), "Product price should not be null");
         assertTrue(productReadDTO.getAttachFiles().size() > 0, "Attach files should be present");
@@ -88,7 +99,6 @@ public class ProductRepositoryTest {
     }
 
     @Test
-    @Transactional
     @Rollback(false)
     public void testDelete() {
         Long productID = 101L;
@@ -100,7 +110,6 @@ public class ProductRepositoryTest {
     }
 
     @Test
-    @Transactional
     @Rollback(false) // 롤백 방지
     public void testUpdate() throws Exception {
 
@@ -164,7 +173,6 @@ public class ProductRepositoryTest {
 
 
     @Test
-    @Transactional
     @Rollback(false) // 롤백 방지
     public void testRegister() throws Exception {
 
@@ -205,11 +213,10 @@ public class ProductRepositoryTest {
 
     // 한 개만 추가
     @Test
-    @Transactional
     @Rollback(false) // 롤백 방지
-    public void testOneRegister() throws Exception {
+    public void testOneRegisterWithCategory() throws Exception {
 
-        log.info("Test One Register");
+        log.info("Test One Register with Category");
 
         // 임의 파일 경로 설정
         Path sampleImagePath = Paths.get("src/test/resources/sample.jpg");
@@ -222,10 +229,9 @@ public class ProductRepositoryTest {
                 new FileInputStream(sampleImagePath.toFile())
         );
 
-        // 가짜 MultipartFile 생성
         MockMultipartFile mockFile2 = new MockMultipartFile(
                 "file",
-                "sample1.jpg",
+                "sample2.jpg",
                 "image/jpeg",
                 new FileInputStream(sampleImagePath.toFile())
         );
@@ -243,12 +249,28 @@ public class ProductRepositoryTest {
         savedFileNames.forEach(product::addFile);
 
         // Product 저장
-        productRepository.save(product);
+        product = productRepository.save(product);
+
+        // 카테고리 검색 및 Product와 연결
+        String categoryName = "식료품";
+        Category category = categoryRepository.findByName(categoryName)
+                .orElseThrow(() -> new IllegalArgumentException("카테고리가 존재하지 않습니다."));
+
+        // CategoryProduct를 생성해 Product와 Category 연결
+        CategoryProduct categoryProduct = CategoryProduct.builder()
+                .product(product)
+                .category(category)
+                .build();
+        categoryProductRepository.save(categoryProduct);
 
         // 검증
         Product savedProduct = productRepository.findById(product.getProductID()).orElse(null);
         assertNotNull(savedProduct, "Product should be saved successfully");
         assertEquals("피카츄", savedProduct.getName(), "Product name should match");
         assertTrue(savedProduct.getAttachFiles().size() > 0, "Product should have attached files");
+
+        // 카테고리 검증
+        assertEquals("식료품", categoryProduct.getCategory().getName(), "Product category should be 식료품");
     }
+
 }
