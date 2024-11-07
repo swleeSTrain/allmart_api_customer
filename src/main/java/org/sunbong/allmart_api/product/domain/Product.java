@@ -41,4 +41,14 @@ public class Product extends BaseEntity {
         attachFiles.add(new ProductImage(filename, attachFiles.size()));
     }
 
+    public void removeFile(String filename) {
+        attachFiles.removeIf(image -> image.getImageURL().equals(filename));
+    }
+
+    // 파일 목록 업데이트 (파일 추가 및 삭제 처리)
+    public void updateFiles(List<String> filesToAdd, List<String> filesToDelete) {
+        filesToDelete.forEach(this::removeFile);
+        filesToAdd.forEach(this::addFile);
+    }
 }
+

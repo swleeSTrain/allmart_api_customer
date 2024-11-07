@@ -6,7 +6,7 @@ import org.sunbong.allmart_api.product.domain.Product;
 
 @Entity
 @Table(name = "tbl_category_product")
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
