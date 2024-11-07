@@ -16,7 +16,7 @@ import java.util.Optional;
 @Log4j2
 public class EmployeeService {
     private final EmployeeRepository employeeRepository;
-
+    //인증
     public EmployeeDTO authenticate(String email, String password) {
         Optional<Employee> result = employeeRepository.findByEmail(email);
         return null;
