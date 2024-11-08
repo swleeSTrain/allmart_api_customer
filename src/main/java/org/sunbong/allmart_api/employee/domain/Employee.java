@@ -23,8 +23,8 @@ public class Employee {
     private String name;
 
     @NotNull
-    @Column(columnDefinition = "CHAR(11)")
-    private String phoneNumber;
+    @Column(length = 11)
+    private char phoneNumber;
 
     private String email;
 

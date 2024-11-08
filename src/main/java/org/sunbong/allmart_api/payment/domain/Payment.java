@@ -23,7 +23,8 @@ public class Payment extends BaseEntity {
     @Column(columnDefinition = "BIGINT")
     private long paymentID;
 
-    @OneToOne(mappedBy = "payment", fetch = FetchType.LAZY)
+    @OneToOne
+    @JoinColumn(name = "orderID", nullable = false, columnDefinition = "BIGINT")
     private OrderEntity order;
 
     @Enumerated(EnumType.STRING)
@@ -33,8 +34,8 @@ public class Payment extends BaseEntity {
     @Column(precision = 10, scale = 2, nullable = false)
     private BigDecimal amount; // BigDecimal을 그대로 사용
 
-    @Column(nullable = false, columnDefinition = "int default 0") // 기본값을 명확히 설정하기 위해
+    @Column(nullable = false)
     @Builder.Default
-    private int completed = 0; // 기본값을 0으로 설정
+    private int completed = 0;
 
 }
