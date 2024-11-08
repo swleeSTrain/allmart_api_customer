@@ -20,8 +20,8 @@ public class Payment extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "paymentID", nullable = false, updatable = false)
-    private Long paymentID;
+    @Column(columnDefinition = "BIGINT")
+    private long paymentID;
 
     @OneToOne
     @JoinColumn(name = "orderID", nullable = false, columnDefinition = "BIGINT")
