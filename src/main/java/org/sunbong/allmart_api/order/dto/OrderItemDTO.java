@@ -1,21 +1,21 @@
-package org.sunbong.allmart_api.order.dto;// OrderItemDTO.java
+package org.sunbong.allmart_api.order.dto;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.sunbong.allmart_api.product.domain.ProductImage;
+import org.sunbong.allmart_api.product.dto.ProductSummaryDTO;
 
 import java.math.BigDecimal;
-import java.util.List;
 
+@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 public class OrderItemDTO {
-    private Long productId;
-    private String productName;
-    private short quantity;
+    private Long orderItemId;
+    private String orderStatus;
     private BigDecimal unitPrice;
-    private List<ProductImage> attachFiles;  // ProductImage 리스트를 필드로 추가
+    private short quantity;
+    private String productName;
 }
