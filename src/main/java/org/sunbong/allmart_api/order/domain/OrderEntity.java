@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.sunbong.allmart_api.common.domain.BaseEntity;
 import org.sunbong.allmart_api.customer.domain.Customer;
+import org.sunbong.allmart_api.payment.domain.Payment;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -43,5 +44,9 @@ public class OrderEntity extends BaseEntity {
     @Builder.Default
     @Column(nullable = false)
     private LocalDateTime orderDate = LocalDateTime.now(); // 새로운 주문 날짜 필드 추가
+
+    @OneToOne
+    @JoinColumn(name = "paymentID", nullable = true) // 변경
+    private Payment payment;
 
 }
