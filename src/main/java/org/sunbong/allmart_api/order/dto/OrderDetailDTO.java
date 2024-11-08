@@ -4,19 +4,19 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.sunbong.allmart_api.order.domain.OrderStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
-public class OrderDTO {
-    private Long orderId;
-    private String customerName;
+public class OrderDetailDTO {
+    private String orderStatus;
+    private int orderQuantity; // 주문 수량 (OrderItems 수)
+    private Long customerId;
+    private String paymentMethod;
     private BigDecimal totalAmount;
-    private OrderStatus status;
     private LocalDateTime orderDate;
 }

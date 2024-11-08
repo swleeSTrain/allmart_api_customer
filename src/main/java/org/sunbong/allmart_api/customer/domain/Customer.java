@@ -22,7 +22,7 @@ public class Customer extends BaseEntity {
     private Long customerID;
 
     @NotNull
-    @Column(columnDefinition = "CHAR(11)")
+    @Column(name = "phone_number", columnDefinition = "CHAR(11)", nullable = false)
     private String phoneNumber;
 
     @NotNull
