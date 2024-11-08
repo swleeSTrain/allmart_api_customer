@@ -43,8 +43,4 @@ public class OrderEntity extends BaseEntity {
     @JoinColumn(name = "paymentID", nullable = false)
     private Payment payment;
 
-    @OneToOne
-    @JoinColumn(name = "paymentID", nullable = true) // 변경
-    private Payment payment;
-
 }
