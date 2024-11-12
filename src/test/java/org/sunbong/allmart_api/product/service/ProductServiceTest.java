@@ -70,7 +70,6 @@ public class ProductServiceTest {
                 .sku("TEST-SKU")
                 .price(BigDecimal.valueOf(2000))
                 .files(List.of(mockFile))
-                .categoryID(1L) // 올바르게 categoryId 설정
                 .build();
 
         Long productId = productService.register(dto);
