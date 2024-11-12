@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.sunbong.allmart_api.common.domain.BaseEntity;
-import org.sunbong.allmart_api.order.domain.OrderEntity;
 
 import java.math.BigDecimal;
 
@@ -16,16 +15,21 @@ import java.math.BigDecimal;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
+//@ToString(exclude = {"order"})
 public class Payment extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(columnDefinition = "BIGINT")
-    private long paymentID;
+    private Long paymentID;
 
-    @OneToOne
-    @JoinColumn(name = "orderID", nullable = false, columnDefinition = "BIGINT")
-    private OrderEntity order;
+    private String serial;
+
+    private Long orderID;
+
+//    @OneToOne
+//    @JoinColumn(name = "orderID", nullable = false, columnDefinition = "BIGINT")
+//    private OrderEntity order;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

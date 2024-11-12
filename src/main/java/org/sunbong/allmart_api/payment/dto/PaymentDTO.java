@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
 
 @Data
@@ -12,8 +13,9 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 public class PaymentDTO {
     private Long paymentID;
-    private Long orderID;  // OrderEntity의 orderID를 참조
+    private Long orderID;
     private String method;
     private BigDecimal amount;
     private int completed;
+    private String serial;  // Payment 엔티티의 serial 필드
 }
