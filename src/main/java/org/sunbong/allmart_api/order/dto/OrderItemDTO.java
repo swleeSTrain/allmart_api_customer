@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.sunbong.allmart_api.order.domain.OrderStatus;
 import org.sunbong.allmart_api.product.dto.ProductSummaryDTO;
 
 import java.math.BigDecimal;
@@ -13,9 +14,9 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderItemDTO {
-    private Long orderItemId;
-    private String orderStatus;
-    private BigDecimal unitPrice;
-    private short quantity;
-    private String productName;
+    private Long orderItemId;       // 주문 항목 ID
+    private int quantity;           // 수량
+    private BigDecimal unitPrice;   // 단가
+    private Long productId;         // 제품 ID
+    private String productName;     // 제품 이름
 }

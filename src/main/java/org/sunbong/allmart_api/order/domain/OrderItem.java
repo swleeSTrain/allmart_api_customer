@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Getter
 @Builder
-@ToString
+@ToString(exclude = {"order","product"})
 @Table(
         name = "tbl_orderItem",
         indexes = {
@@ -26,7 +26,7 @@ public class OrderItem {
     private Long orderItemID;
 
     @Column(columnDefinition = "SMALLINT", nullable = false)
-    private short quantity;
+    private int quantity;
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal unitPrice;
