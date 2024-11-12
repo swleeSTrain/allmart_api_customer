@@ -50,7 +50,7 @@ public class ProductServiceTest {
                     .sku("TEST-SKU-" + i)
                     .price(BigDecimal.valueOf(2000 + i)) // 가격은 2000부터 시작해서 i만큼 증가
                     .files(List.of(mockFile)) // 더미 파일 추가
-                    .categoryId(1L) // 카테고리 ID 설정 (예: 1L)
+                    .categoryID(1L) // 카테고리 ID 설정 (예: 1L)
                     .build();
 
             // 상품 등록
@@ -59,7 +59,6 @@ public class ProductServiceTest {
 
         }
     }
-
 
     // 등록 테스트
     @Test
@@ -71,13 +70,11 @@ public class ProductServiceTest {
                 .sku("TEST-SKU")
                 .price(BigDecimal.valueOf(2000))
                 .files(List.of(mockFile))
-                .categoryId(1L) // 올바르게 categoryId 설정
                 .build();
 
         Long productId = productService.register(dto);
         assertNotNull(productId, "Product ID should not be null after registration");
     }
-
 
     // 수정 테스트
     @Test
@@ -103,7 +100,6 @@ public class ProductServiceTest {
         assertEquals(productId, editedProductId, "Product ID should remain the same after edit");
 
     }
-
 
 
 }
