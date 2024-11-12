@@ -32,4 +32,6 @@ public class Customer extends BaseEntity {
     @Builder.Default
     private int loyaltyPoints = 0;
 
+
+
 }

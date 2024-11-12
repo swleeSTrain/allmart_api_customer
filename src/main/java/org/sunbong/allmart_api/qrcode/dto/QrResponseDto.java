@@ -16,21 +16,15 @@ import java.time.LocalDateTime;
 @Log4j2
 public class QrResponseDto {
 
-    @NotNull
     private String fileName;
 
-    @NotNull
     private String data;
 
-    @NotNull
     private LocalDateTime createTime;
 
-    @NotNull
     private LocalDateTime expireTime;
 
-    @NotNull
     private String qrCodeURL;
 
-    @Builder.Default
     private boolean isExpired = false;
 }

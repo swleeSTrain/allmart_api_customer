@@ -1,9 +1,12 @@
 package org.sunbong.allmart_api.customer.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.sunbong.allmart_api.common.dto.PageRequestDTO;
+import org.sunbong.allmart_api.common.exception.CommonExceptions;
 import org.sunbong.allmart_api.customer.domain.Customer;
-import org.sunbong.allmart_api.customer.dto.CustomerResponseDTO;
+import org.sunbong.allmart_api.customer.dto.CustomerRequestDTO;
 import org.sunbong.allmart_api.customer.repository.CustomerRepository;
 
 import java.util.Optional;
@@ -23,14 +26,21 @@ public class CustomerService {
         return Optional.empty();
     }
 
-    public Optional<Customer> addMemberWithPhoneNumber(String phoneNumber) {
+    public Optional<Customer> addCustomerWithPhoneNumber(CustomerRequestDTO requestDTO) {
 
-        CustomerResponseDTO customerDTO = CustomerResponseDTO.builder()
-                .phoneNumber(phoneNumber)
+        Customer customer = Customer.builder()
+                .phoneNumber(requestDTO.getPhoneNumber())
                 .build();
 
-        return null;
+        return Optional.of(customer);
+    }
 
+    public Optional<Customer> list(PageRequestDTO PageRequestDTO) {
+
+        if(PageRequestDTO.getPage() < 0){
+            throw CommonExceptions.LIST_ERROR.get();
+        }
+        return null;
     }
 
 
