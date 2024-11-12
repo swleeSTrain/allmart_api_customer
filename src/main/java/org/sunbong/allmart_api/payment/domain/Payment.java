@@ -16,12 +16,17 @@ import java.math.BigDecimal;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
+//@ToString(exclude = {"order"})
 public class Payment extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(columnDefinition = "BIGINT")
-    private long paymentID;
+    private Long paymentID;
+
+    private String serial;
+
+//    private Long orderID;
 
     @OneToOne
     @JoinColumn(name = "orderID", nullable = false, columnDefinition = "BIGINT")

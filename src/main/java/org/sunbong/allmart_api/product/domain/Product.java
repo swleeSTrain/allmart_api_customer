@@ -3,6 +3,7 @@ package org.sunbong.allmart_api.product.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.BatchSize;
+import org.sunbong.allmart_api.category.domain.Category;
 import org.sunbong.allmart_api.common.domain.BaseEntity;
 
 import java.math.BigDecimal;
@@ -20,35 +21,37 @@ public class Product extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long productID;
+    private Long productID;
 
-    @Column(length = 100)
+    @Column(length = 100, nullable = false)
     private String name;
 
-    @Column(length = 50, unique = true, nullable = false)  // 유니크 및 Not Null 조건 추가
+    @Column(length = 50, unique = true, nullable = false)
     private String sku;
 
-    @Column(precision = 10, scale = 2)  // 10자리 숫자 중 소수점 이하 2자리까지 허용
+    @Column(precision = 10, scale = 2, nullable = false)
     private BigDecimal price;
 
     @ElementCollection
     @CollectionTable(name = "tbl_product_image")
-    @BatchSize(size = 100)
+    @BatchSize(size = 50)
     @Builder.Default
     private List<ProductImage> attachFiles = new ArrayList<>();
 
+    @ManyToOne(fetch = FetchType.LAZY) // 즉시 로딩하지 않고 필요할 때만 쿼리에서 실행
+    @JoinColumn(name = "categoryid", nullable = false) // 외래 키 설정
+    private Category category;
+
     public void addFile(String filename) {
-        attachFiles.add(new ProductImage(filename, attachFiles.size()));
+        int nextOrd = attachFiles.stream()
+                .mapToInt(ProductImage::getOrd)
+                .max()
+                .orElse(-1) + 1;  // 다음 ord 값 계산
+        attachFiles.add(new ProductImage(filename, nextOrd));  // 고유한 ord로 추가
     }
 
-    public void removeFile(String filename) {
-        attachFiles.removeIf(image -> image.getImageURL().equals(filename));
-    }
-
-    // 파일 목록 업데이트 (파일 추가 및 삭제 처리)
-    public void updateFiles(List<String> filesToAdd, List<String> filesToDelete) {
-        filesToDelete.forEach(this::removeFile);
-        filesToAdd.forEach(this::addFile);
+    public void deleteFileByOrd(List<Integer> ordsToDelete) {
+        this.attachFiles.removeIf(file -> ordsToDelete.contains(file.getOrd()));
     }
 }
 
