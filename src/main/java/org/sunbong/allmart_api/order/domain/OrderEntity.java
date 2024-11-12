@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.sunbong.allmart_api.common.domain.BaseEntity;
 import org.sunbong.allmart_api.customer.domain.Customer;
+import org.sunbong.allmart_api.payment.domain.Payment;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -16,9 +17,7 @@ import java.time.LocalDateTime;
 @Builder
 @ToString(callSuper = true)
 @Table(name = "tbl_order",
-        indexes = {@Index(name = "idx_orderDate", columnList = "createdDate"),// 주문일 인덱스 설정
-                @Index(name = "idx_customerID", columnList = "customerID")}  // 고객 ID 인덱스 추가
-)
+        indexes = @Index(name = "idx_customerID", columnList = "customerID"))  // 고객 ID 인덱스 추가
 public class OrderEntity extends BaseEntity {
 
     @Id
@@ -40,8 +39,8 @@ public class OrderEntity extends BaseEntity {
     @Column(nullable = false)
     private int notification;
 
-    @Builder.Default
-    @Column(nullable = false)
-    private LocalDateTime orderDate = LocalDateTime.now(); // 새로운 주문 날짜 필드 추가
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "paymentID", nullable = false)
+    private Payment payment;
 
 }

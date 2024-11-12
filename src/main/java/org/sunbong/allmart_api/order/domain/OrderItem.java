@@ -42,5 +42,4 @@ public class OrderItem {
     @JoinColumn(name = "productID", nullable = false)
     private Product product;
 
-
 }

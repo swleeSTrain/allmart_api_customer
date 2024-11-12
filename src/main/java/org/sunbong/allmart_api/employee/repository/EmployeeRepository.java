@@ -6,6 +6,7 @@ import org.sunbong.allmart_api.employee.domain.Employee;
 import java.util.Optional;
 
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
+
     Optional<Employee> findByEmail(String email);
 
 }
