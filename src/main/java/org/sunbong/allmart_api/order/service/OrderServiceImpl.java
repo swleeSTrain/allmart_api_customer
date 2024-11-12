@@ -1,6 +1,7 @@
 package org.sunbong.allmart_api.order.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.sunbong.allmart_api.common.dto.PageRequestDTO;
