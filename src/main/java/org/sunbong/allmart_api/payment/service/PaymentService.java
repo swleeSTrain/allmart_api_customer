@@ -1,16 +1,19 @@
 package org.sunbong.allmart_api.payment.service;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.sunbong.allmart_api.order.domain.OrderEntity;
-import org.sunbong.allmart_api.order.repository.OrderRepository;
+import org.springframework.transaction.annotation.Transactional;
 import org.sunbong.allmart_api.payment.domain.Payment;
 import org.sunbong.allmart_api.payment.domain.PaymentMethod;
 import org.sunbong.allmart_api.payment.dto.PaymentDTO;
 import org.sunbong.allmart_api.payment.repository.PaymentRepository;
+import org.sunbong.allmart_api.order.domain.OrderEntity;
+import org.sunbong.allmart_api.order.repository.OrderRepository;
 
+import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -19,42 +22,48 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final OrderRepository orderRepository;
 
-    @Transactional
-    public Payment createPayment(PaymentDTO paymentDTO) {
-        // PaymentDTO에서 orderID를 가져와 OrderEntity 조회
-        OrderEntity order = orderRepository.findById(paymentDTO.getOrderID())
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+    @Transactional(readOnly = true)
+    public List<PaymentDTO> findPaymentsWithOrderById(Long orderID) {
+        List<Payment> payments = paymentRepository.findPaymentsWithOrderById(orderID);
+        return payments.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
 
-        // 조회된 OrderEntity를 사용하여 Payment 객체 생성
+    @Transactional
+    public PaymentDTO createPayment(Long orderID, String method, BigDecimal amount) {
+        Optional<OrderEntity> orderEntityOptional = orderRepository.findById(orderID);
+        if (orderEntityOptional.isEmpty()) {
+            throw new IllegalArgumentException("Order not found with ID: " + orderID);
+        }
+
         Payment payment = Payment.builder()
-                .order(order)
-                .method(PaymentMethod.valueOf(paymentDTO.getMethod()))
-                .amount(paymentDTO.getAmount())
-                .completed(paymentDTO.getCompleted())
+                .order(orderEntityOptional.get())
+                .method(PaymentMethod.valueOf(method))
+                .amount(amount)
                 .build();
 
-        return paymentRepository.save(payment);
-    }
-
-    public Optional<PaymentDTO> getPaymentById(Long paymentID) {
-        return paymentRepository.findById(paymentID)
-                .map(this::convertToDTO);
+        paymentRepository.save(payment);
+        return convertToDTO(payment);
     }
 
     @Transactional
-    public PaymentDTO completePayment(Long paymentID) {
+    public PaymentDTO updatePayment(Long paymentID, int completed) {
         Payment payment = paymentRepository.findById(paymentID)
-                .orElseThrow(() -> new RuntimeException("Payment not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Payment not found with ID: " + paymentID));
 
-        payment = payment.toBuilder().completed(1).build();
-        paymentRepository.save(payment);
-        return convertToDTO(payment);
+        Payment updatedPayment = payment.toBuilder()
+                .completed(completed)
+                .build();
+
+        paymentRepository.save(updatedPayment);
+        return convertToDTO(updatedPayment);
     }
 
     private PaymentDTO convertToDTO(Payment payment) {
         return PaymentDTO.builder()
                 .paymentID(payment.getPaymentID())
-                .orderID(payment.getOrder().getOrderID()) // OrderEntity의 orderID 참조
+                .orderID(payment.getOrder().getOrderID())
                 .method(payment.getMethod().name())
                 .amount(payment.getAmount())
                 .completed(payment.getCompleted())
