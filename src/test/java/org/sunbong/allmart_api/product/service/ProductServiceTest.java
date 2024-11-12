@@ -60,7 +60,6 @@ public class ProductServiceTest {
         }
     }
 
-
     // 등록 테스트
     @Test
     public void testRegister() throws Exception {
@@ -77,7 +76,6 @@ public class ProductServiceTest {
         Long productId = productService.register(dto);
         assertNotNull(productId, "Product ID should not be null after registration");
     }
-
 
     // 수정 테스트
     @Test
@@ -103,7 +101,6 @@ public class ProductServiceTest {
         assertEquals(productId, editedProductId, "Product ID should remain the same after edit");
 
     }
-
 
 
 }
