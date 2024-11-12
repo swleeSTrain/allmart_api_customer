@@ -6,5 +6,5 @@ import org.sunbong.allmart_api.point.domain.Point;
 import java.util.Optional;
 
 public interface PointRepository extends JpaRepository<Point, Long> {
-    Optional<Point> findByUserID(Long userID); // 사용자 ID로 조회
+    Optional<Point> findByCustomerID(Long customerID); // 사용자 ID로 조회
 }
