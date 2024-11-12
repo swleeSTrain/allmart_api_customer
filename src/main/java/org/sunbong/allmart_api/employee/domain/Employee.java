@@ -1,11 +1,10 @@
 package org.sunbong.allmart_api.employee.domain;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+
+import lombok.*;
+
+import java.util.Set;
 
 @Entity
 @Table(name = "tbl_employee")
@@ -13,26 +12,28 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString(exclude = {"roles"})
 public class Employee {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(columnDefinition = "BIGINT")
     private Long employeeID;
-    @NotNull
-    @Column(length = 30)
+
+
+    @Column(length = 30, nullable = false)
     private String name;
 
-    @NotNull
-    @Column(length = 11)
-    private char phoneNumber;
+    @Column(length = 11, nullable = false)
+    private String phoneNumber;
 
+    @Column(nullable = false)
     private String email;
 
     private String password;
 
-    @ManyToOne
+    @OneToMany
     @JoinColumn(name = "roleid")
-    private Role role_id;
+    private Set<Role> roles;
 
 
 }
