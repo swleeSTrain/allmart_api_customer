@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.sunbong.allmart_api.common.domain.BaseEntity;
+import org.sunbong.allmart_api.order.domain.OrderEntity;
 
 import java.math.BigDecimal;
 
@@ -25,11 +26,11 @@ public class Payment extends BaseEntity {
 
     private String serial;
 
-    private Long orderID;
+//    private Long orderID;
 
-//    @OneToOne
-//    @JoinColumn(name = "orderID", nullable = false, columnDefinition = "BIGINT")
-//    private OrderEntity order;
+    @OneToOne
+    @JoinColumn(name = "orderID", nullable = false, columnDefinition = "BIGINT")
+    private OrderEntity order;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
