@@ -11,7 +11,7 @@ import org.sunbong.allmart_api.payment.domain.PaymentMethod;
 import org.sunbong.allmart_api.payment.dto.PaymentDTO;
 import org.sunbong.allmart_api.payment.repository.PaymentRepository;
 import org.sunbong.allmart_api.order.domain.OrderEntity;
-import org.sunbong.allmart_api.order.repository.OrderRepository;
+import org.sunbong.allmart_api.order.repository.OrderJpaRepository;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -25,7 +25,7 @@ class PaymentServiceTest {
     private PaymentRepository paymentRepository;
 
     @Autowired
-    private OrderRepository orderRepository;
+    private OrderJpaRepository orderJpaRepository;
 
     @Autowired
     private PaymentService paymentService;
@@ -40,7 +40,7 @@ class PaymentServiceTest {
         Long orderID = 1L;
         OrderEntity order = new OrderEntity();
         ReflectionTestUtils.setField(order, "orderID", orderID);
-        orderRepository.save(order); // 실제로 데이터베이스에 저장
+        orderJpaRepository.save(order); // 실제로 데이터베이스에 저장
 
         Payment payment = Payment.builder()
                 .order(order)
@@ -62,7 +62,7 @@ class PaymentServiceTest {
     void testCreatePaymentWithAutoIncrementedId() {
         // 새로운 주문 생성
         OrderEntity order = new OrderEntity();
-        orderRepository.save(order);
+        orderJpaRepository.save(order);
 
         // 결제 생성
         Payment payment = Payment.builder()
@@ -84,7 +84,7 @@ class PaymentServiceTest {
         Long orderID = 1L;
         OrderEntity order = new OrderEntity();
         ReflectionTestUtils.setField(order, "orderID", orderID);
-        orderRepository.save(order); // 실제로 데이터베이스에 저장
+        orderJpaRepository.save(order); // 실제로 데이터베이스에 저장
 
         PaymentDTO result = paymentService.createPayment(orderID, "ONLINE_PAYMENT", new BigDecimal("200.00"));
 

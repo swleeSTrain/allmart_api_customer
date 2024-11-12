@@ -8,7 +8,7 @@ import org.sunbong.allmart_api.payment.domain.PaymentMethod;
 import org.sunbong.allmart_api.payment.dto.PaymentDTO;
 import org.sunbong.allmart_api.payment.repository.PaymentRepository;
 import org.sunbong.allmart_api.order.domain.OrderEntity;
-import org.sunbong.allmart_api.order.repository.OrderRepository;
+import org.sunbong.allmart_api.order.repository.OrderJpaRepository;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public class PaymentService {
 
     private final PaymentRepository paymentRepository;
-    private final OrderRepository orderRepository;
+    private final OrderJpaRepository orderJpaRepository;
 
     @Transactional(readOnly = true)
     public List<PaymentDTO> findPaymentsWithOrderById(Long orderID) {
@@ -32,7 +32,7 @@ public class PaymentService {
 
     @Transactional
     public PaymentDTO createPayment(Long orderID, String method, BigDecimal amount) {
-        Optional<OrderEntity> orderEntityOptional = orderRepository.findById(orderID);
+        Optional<OrderEntity> orderEntityOptional = orderJpaRepository.findById(orderID);
         if (orderEntityOptional.isEmpty()) {
             throw new IllegalArgumentException("Order not found with ID: " + orderID);
         }
