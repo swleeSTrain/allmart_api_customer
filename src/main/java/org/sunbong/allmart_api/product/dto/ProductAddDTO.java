@@ -19,4 +19,5 @@ public class ProductAddDTO {
     private String sku;
     private BigDecimal price;
     private List<MultipartFile> files;
+    private Long categoryID;
 }

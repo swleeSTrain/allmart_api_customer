@@ -1,18 +1,12 @@
 package org.sunbong.allmart_api.product.repository.search;
 
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPQLQuery;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
-import org.sunbong.allmart_api.category.domain.CategoryProduct;
-import org.sunbong.allmart_api.category.domain.QCategory;
-import org.sunbong.allmart_api.category.domain.QCategoryProduct;
 import org.sunbong.allmart_api.common.dto.PageRequestDTO;
 import org.sunbong.allmart_api.common.dto.PageResponseDTO;
 import org.sunbong.allmart_api.product.domain.Product;
@@ -47,6 +41,7 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
         BooleanBuilder builder = new BooleanBuilder();
         String keyword = pageRequestDTO.getKeyword();
         String type = pageRequestDTO.getType();
+        Long categoryID = pageRequestDTO.getCategoryID(); // 카테고리 ID 필터
 
         if (keyword != null && type != null) {
             if (type.contains("name")) {
@@ -57,10 +52,16 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
             }
         }
 
+        // 카테고리 ID 필터 추가
+        if (categoryID != null) {
+            builder.and(product.category.categoryID.eq(categoryID));
+        }
+
         // 엔티티 조회
         JPQLQuery<Product> query = from(product)
-                .leftJoin(product.attachFiles, attachFile).fetchJoin()
+                .join(product.attachFiles, attachFile) // 필수 항목이면 join
                 .where(builder)
+                .where(attachFile.ord.eq(0)) // 첫 번째 첨부파일만 가져오기
                 .groupBy(product);
 
         // 페이징 적용
@@ -71,19 +72,13 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
 
         // DTO 변환
         List<ProductListDTO> dtoList = productList.stream()
-                .map(prod -> {
-                    String thumbnailImage = prod.getAttachFiles().isEmpty()
-                            ? null
-                            : "s_" + prod.getAttachFiles().get(0).getImageURL();
-                    return ProductListDTO.builder()
-                            .productID(prod.getProductID())
-                            .name(prod.getName())
-                            .sku(prod.getSku())
-                            .price(prod.getPrice())
-                            .thumbnailImage(thumbnailImage)
-                            .build();
-                })
-                .collect(Collectors.toList());
+                .map(prod -> new ProductListDTO(
+                        prod.getProductID(),
+                        prod.getName(),
+                        prod.getSku(),
+                        prod.getPrice(),
+                        prod.getAttachFiles().get(0).getImageURL() // 첫 번째 이미지 바로 사용
+                )).toList();
 
         return PageResponseDTO.<ProductListDTO>withAll()
                 .dtoList(dtoList)
@@ -92,46 +87,39 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
                 .build();
     }
 
+
+
     public ProductReadDTO readById(Long productID) {
 
         log.info("-------------------read----------");
 
-        QCategoryProduct categoryProduct = QCategoryProduct.categoryProduct;
         QProduct product = QProduct.product;
         QProductImage attachFile = QProductImage.productImage;
-        QCategory category = QCategory.category;
 
-        // CategoryProduct를 기준으로 Product, attachFiles, Category를 모두 leftJoin으로 병합
-        CategoryProduct result = from(categoryProduct)
-                .leftJoin(categoryProduct.product, product).fetchJoin() // Product 병합
-                .leftJoin(product.attachFiles, attachFile).fetchJoin() // Product의 첨부 파일 병합
-                .leftJoin(categoryProduct.category, category).fetchJoin() // Category 병합
-                .where(product.productID.eq(productID))
-                .fetchOne();
+        JPQLQuery<Product> query = from(product)
+                .leftJoin(product.attachFiles, attachFile).fetchJoin()
+                .where(product.productID.eq(productID));
+
+        Product result = query.fetchOne();
 
         if (result == null) {
             return null;
         }
 
-        // 파일 이름 리스트 생성
-        List<String> attachFiles = result.getProduct().getAttachFiles().stream()
+        // DTO 변환 (attachFiles의 파일 이름을 문자열 리스트로 변환)
+        List<String> attachFiles = result.getAttachFiles().stream()
                 .map(file -> file.getImageURL())
                 .collect(Collectors.toList());
 
-        // Category 이름 가져오기
-        String categoryName = result.getCategory().getName();
-
         return ProductReadDTO.builder()
-                .productID(result.getProduct().getProductID())
-                .name(result.getProduct().getName())
-                .sku(result.getProduct().getSku())
-                .price(result.getProduct().getPrice())
+                .productID(result.getProductID())
+                .name(result.getName())
+                .sku(result.getSku())
+                .price(result.getPrice())
                 .attachFiles(attachFiles)
-                .categoryName(categoryName) // 카테고리 이름 추가
-                .createdDate(result.getProduct().getCreatedDate())
-                .modifiedDate(result.getProduct().getModifiedDate())
+                .createdDate(result.getCreatedDate())
+                .modifiedDate(result.getModifiedDate())
                 .build();
     }
-
 
 }
