@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class CategoryDTO {
+public class CategoryAddDTO {
 
     private Long categoryID;
 
