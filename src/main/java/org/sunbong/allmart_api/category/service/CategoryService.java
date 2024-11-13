@@ -6,7 +6,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.sunbong.allmart_api.category.domain.Category;
 import org.sunbong.allmart_api.category.dto.CategoryAddDTO;
+import org.sunbong.allmart_api.category.dto.CategoryListDTO;
 import org.sunbong.allmart_api.category.repository.CategoryRepository;
+import org.sunbong.allmart_api.common.dto.PageRequestDTO;
+import org.sunbong.allmart_api.common.dto.PageResponseDTO;
 
 @Service
 @Transactional
@@ -15,6 +18,14 @@ import org.sunbong.allmart_api.category.repository.CategoryRepository;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
+
+    // 리스트
+    public PageResponseDTO<CategoryListDTO> list(PageRequestDTO pageRequestDTO) {
+
+        PageResponseDTO<CategoryListDTO> result = categoryRepository.list(pageRequestDTO);
+
+        return result;
+    }
 
     // 등록
     public Long register(CategoryAddDTO dto) throws Exception {

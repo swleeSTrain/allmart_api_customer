@@ -7,7 +7,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-public class CategoryAddDTO {
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class CategoryListDTO {
 
     private Long categoryID;
 

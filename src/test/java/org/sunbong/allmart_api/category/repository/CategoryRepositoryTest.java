@@ -1,5 +1,6 @@
 package org.sunbong.allmart_api.category.repository;
 
+import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -7,15 +8,37 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import org.sunbong.allmart_api.category.domain.Category;
 import org.sunbong.allmart_api.category.dto.CategoryAddDTO;
+import org.sunbong.allmart_api.category.dto.CategoryListDTO;
+import org.sunbong.allmart_api.common.dto.PageRequestDTO;
+import org.sunbong.allmart_api.common.dto.PageResponseDTO;
+import org.sunbong.allmart_api.product.dto.ProductListDTO;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
 @Transactional
+@Log4j2
 public class CategoryRepositoryTest {
 
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Test
+    public void testList() {
+
+        PageRequestDTO pageRequestDTO = PageRequestDTO.builder().page(1).size(10).build();
+
+        PageResponseDTO<CategoryListDTO> result = categoryRepository.list(pageRequestDTO);
+
+        // DTO 리스트 출력
+        result.getDtoList().forEach(dto -> {
+            log.info("Category DTO: " + dto);
+        });
+
+        // 검증
+        assertNotNull(result, "Result should not be null");
+    }
 
 
     @Test
