@@ -8,7 +8,7 @@ import org.sunbong.allmart_api.order.domain.OrderEntity;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "tbl_payment")
+@Table(name = "tbl_payment", indexes = @Index(name = "idx_orderID", columnList = "orderID"))
 @Getter
 @Builder(toBuilder = true)
 @AllArgsConstructor
