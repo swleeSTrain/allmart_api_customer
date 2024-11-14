@@ -57,7 +57,7 @@ public class CategoryRepositoryTest {
 
                 categoryRepository.save(category);
             } else {
-                System.out.println(categoryName + "는 이미 존재하는 카테고리입니다.");
+                log.info(categoryName + "는 이미 존재하는 카테고리입니다.");
             }
         }
 
@@ -87,7 +87,7 @@ public class CategoryRepositoryTest {
             assertThat(savedCategory.getCategoryID()).isNotNull();
             assertThat(savedCategory.getName()).isEqualTo("식료품");
         } else {
-            System.out.println("이미 존재하는 카테고리입니다.");
+            log.info("이미 존재하는 카테고리입니다.");
         }
     }
 
@@ -114,7 +114,7 @@ public class CategoryRepositoryTest {
             assertThat(savedCategory.getCategoryID()).isNotNull();
             assertThat(savedCategory.getName()).isEqualTo("포켓몬");
         } else {
-            System.out.println("이미 존재하는 카테고리입니다.");
+            log.info("이미 존재하는 카테고리입니다.");
         }
     }
 }
