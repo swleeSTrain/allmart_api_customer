@@ -41,18 +41,18 @@ public class QrSerivce {
     public String generateQRCode(QrRequestDto qrRequestDto, QrCodeType qrCodeType) {
 
         try {
-                //QR 코드 설정
-                Map<EncodeHintType, Object> hints = new HashMap<EncodeHintType, Object>();
-                hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
+            //QR 코드 설정
+            Map<EncodeHintType, Object> hints = new HashMap<EncodeHintType, Object>();
+            hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
 
-                //고유한 파일명 생성(UUID 사용)
-                String fileName = UUID.randomUUID().toString() + ".png";
-                String filePath = qrCodeType.getDirectoryPath() + fileName;
+            //고유한 파일명 생성(UUID 사용)
+            String fileName = UUID.randomUUID().toString() + ".png";
+            String filePath = qrCodeType.getDirectoryPath() + fileName;
 
-                LocalDateTime expireTime;
-                String qrCodeUrl;
-                String encoded= URLEncoder.encode(qrRequestDto.getData(), StandardCharsets.UTF_8);
-                switch (qrCodeType){
+            LocalDateTime expireTime;
+            String qrCodeUrl;
+            String encoded= URLEncoder.encode(qrRequestDto.getData(), StandardCharsets.UTF_8);
+            switch (qrCodeType){
 
                 case QR_CODE_SIGNUP_DIRECTORY:
                     expireTime = LocalDateTime.now().plusMonths(QR_CODE_SIGNUP_EXPIRED);
@@ -74,18 +74,18 @@ public class QrSerivce {
                     qrCodeUrl = QR_CODE_SIGNUP_VERIFY_URL.getURL() + encoded;
             }
 
-                //QR 코드 생성
-                QRCodeWriter qrCodeWriter = new QRCodeWriter();
-                BitMatrix bitMatrix = qrCodeWriter.encode(qrCodeUrl,BarcodeFormat.QR_CODE,300, 300, hints);
+            //QR 코드 생성
+            QRCodeWriter qrCodeWriter = new QRCodeWriter();
+            BitMatrix bitMatrix = qrCodeWriter.encode(qrCodeUrl,BarcodeFormat.QR_CODE,300, 300, hints);
 
-                //디렉토리 생성(존재하지 않는 경우)
-                File directory = new File(qrCodeType.getDirectoryPath());
-                if(!directory.exists()){
-                    directory.mkdirs();
+            //디렉토리 생성(존재하지 않는 경우)
+            File directory = new File(qrCodeType.getDirectoryPath());
+            if(!directory.exists()){
+                directory.mkdirs();
             }
 
-                Path path = FileSystems.getDefault().getPath(filePath);
-                MatrixToImageWriter.writeToPath(bitMatrix, "PNG", path);
+            Path path = FileSystems.getDefault().getPath(filePath);
+            MatrixToImageWriter.writeToPath(bitMatrix, "PNG", path);
 
 
 
