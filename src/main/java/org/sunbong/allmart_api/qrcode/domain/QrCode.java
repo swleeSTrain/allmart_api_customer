@@ -2,19 +2,17 @@ package org.sunbong.allmart_api.qrcode.domain;
 
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import org.sunbong.allmart_api.customer.domain.Customer;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString(exclude = "customer")
+@Getter
 public class QrCode {
 
     @Id

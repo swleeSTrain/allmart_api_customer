@@ -49,9 +49,10 @@ public class QrController {
     }
 
     @GetMapping("/signUp/verify")
-    public ResponseEntity<String> verifySignUpQRCode(@RequestParam String data){
+    public ResponseEntity<String> verifySignUpQRCode(@RequestParam("token") String data){
+        String result = qrService.verifySignUpQRCode(data);
 
-        return null;
+        return ResponseEntity.ok(result);
     }
 
 }

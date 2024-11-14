@@ -7,9 +7,11 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.sunbong.allmart_api.customer.domain.Customer;
 import org.sunbong.allmart_api.qrcode.domain.QrCode;
 import org.sunbong.allmart_api.qrcode.domain.QrCodeType;
 import org.sunbong.allmart_api.qrcode.dto.QrRequestDto;
+import org.sunbong.allmart_api.qrcode.dto.QrResponseDto;
 import org.sunbong.allmart_api.qrcode.repository.QrRepository;
 
 
@@ -21,6 +23,7 @@ import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.sunbong.allmart_api.qrcode.domain.QrCodeVerifyUrl.*;
@@ -108,9 +111,21 @@ public class QrSerivce {
 
     }
 
-    private boolean isExpiredQRCode(LocalDateTime now, String date){
-        LocalDateTime dateTime = LocalDateTime.parse(date);
-        return now.isAfter(dateTime.plusMinutes(QR_CODE_SIGNUP_EXPIRED) );
+    public String verifySignUpQRCode(String token) {
+        String extension = ".png";
+        Optional<QrCode> findQrCode = qrRepository.findById(token + String.valueOf(extension));
+        if( findQrCode.isPresent()) {
+            if(isExpiredQRCode(findQrCode.get().getExpireTime())){
+                QrCode qrCode = findQrCode.get().toBuilder().isExpired(true).build();
+                qrRepository.save(qrCode);
+                return "verify success";
+            }
+        }
+        return "verification fail";
+    }
+
+    private boolean isExpiredQRCode(LocalDateTime date){
+        return LocalDateTime.now().isAfter(date.plusMinutes(QR_CODE_SIGNUP_EXPIRED) );
     }
 
 }
