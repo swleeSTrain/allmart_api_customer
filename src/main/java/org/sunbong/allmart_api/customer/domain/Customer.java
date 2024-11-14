@@ -16,20 +16,18 @@ import org.sunbong.allmart_api.common.domain.BaseEntity;
 @Table(name = "tbl_customer")
 public class Customer extends BaseEntity {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "customerID")
     private Long customerID;
 
     @NotNull
-    @Column(name = "phone_number", length = 15, nullable = false)
+    @Column(columnDefinition = "CHAR(11)", unique = true)
     private String phoneNumber;
 
-    @NotNull
     @Column(length = 30)
     private String name;
 
     @Builder.Default
     private int loyaltyPoints = 0;
-
 }
