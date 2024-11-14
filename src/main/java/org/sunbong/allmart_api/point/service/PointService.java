@@ -6,13 +6,23 @@ import org.sunbong.allmart_api.point.domain.Point;
 import org.sunbong.allmart_api.point.dto.PointDTO;
 import org.sunbong.allmart_api.point.repository.PointRepository;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class PointService {
 
     private final PointRepository pointRepository;
+
+    // 모든 사용자 포인트 조회
+    public List<PointDTO> getAllPoints() {
+        return pointRepository.findAll()
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
 
     public PointDTO getPointByUserID(Long userID) {
         Optional<Point> point = pointRepository.findByCustomerID(userID); // 수정된 부분
