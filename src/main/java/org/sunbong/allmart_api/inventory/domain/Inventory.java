@@ -29,5 +29,6 @@ public class Inventory {
 
     @Column(name = "inStock", nullable = true)
     private Integer inStock = 1;
+
 }
 
