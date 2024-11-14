@@ -36,6 +36,7 @@ public class CategoryService {
 
     // 등록
     public Long register(CategoryDTO dto) throws Exception {
+
         // 중복 체크
         if (categoryRepository.findByName(dto.getName()).isPresent()) {
             throw new Exception("이미 존재하는 카테고리입니다: " + dto.getName());
@@ -64,9 +65,15 @@ public class CategoryService {
     }
 
     // 수정
-    public Long edit(Long id, CategoryDTO dto) {
+    public Long edit(Long id, CategoryDTO dto) throws Exception {
+
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid category ID"));
+
+        // 카테고리 이름이 변경된 경우, 이름 중복 검사
+        if (!category.getName().equals(dto.getName()) && categoryRepository.findByName(dto.getName()).isPresent()) {
+            throw new Exception("이미 존재하는 카테고리입니다: " + dto.getName());
+        }
 
         category = category.toBuilder()
                 .name(dto.getName())
@@ -76,4 +83,5 @@ public class CategoryService {
 
         return updatedCategory.getCategoryID();
     }
+
 }

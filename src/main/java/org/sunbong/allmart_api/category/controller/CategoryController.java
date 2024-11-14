@@ -71,7 +71,8 @@ public class CategoryController {
     @PutMapping("/{categoryID}")
     public ResponseEntity<Long> edit(
             @PathVariable Long categoryID,
-            @RequestBody CategoryDTO dto) {
+            @RequestBody CategoryDTO dto
+    ) throws Exception  {
 
         log.info("=======Category Delete: {} =======", categoryID);
 
