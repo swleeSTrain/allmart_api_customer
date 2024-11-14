@@ -4,6 +4,7 @@ import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Commit;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import org.sunbong.allmart_api.common.dto.PageRequestDTO;
@@ -18,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @Log4j2
 @SpringBootTest
 @Transactional
+@Commit
 public class ProductRepositoryTest {
 
     @Autowired
@@ -75,7 +77,6 @@ public class ProductRepositoryTest {
     }
 
     @Test
-    @Rollback(false)
     public void testDelete() {
 
         Long productID = 101L;
