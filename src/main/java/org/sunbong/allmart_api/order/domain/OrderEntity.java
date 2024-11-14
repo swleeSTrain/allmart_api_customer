@@ -44,4 +44,8 @@ public class OrderEntity extends BaseEntity {
         this.status = newStatus;
     }
 
+    // 총 금액 업데이트 메서드
+    public void updateTotalAmount(BigDecimal amount) {
+        this.totalAmount = amount;
+    }
 }
