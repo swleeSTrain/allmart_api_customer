@@ -31,7 +31,6 @@ public class OrderItem {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal unitPrice;
 
-
     // Order와의 Many-to-One 관계 설정
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "orderID", nullable = false)
@@ -41,5 +40,10 @@ public class OrderItem {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "productID", nullable = false)
     private Product product;
+
+
+    public BigDecimal getTotalPrice() {
+        return unitPrice.multiply(BigDecimal.valueOf(quantity));
+    }
 
 }

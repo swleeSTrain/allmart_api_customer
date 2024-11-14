@@ -1,22 +1,19 @@
 package org.sunbong.allmart_api.payment.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.sunbong.allmart_api.common.domain.BaseEntity;
 import org.sunbong.allmart_api.order.domain.OrderEntity;
 
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "tbl_payment")
+@Table(name = "tbl_payment", indexes = @Index(name = "idx_orderID", columnList = "orderID"))
 @Getter
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
-//@ToString(exclude = {"order"})
+@ToString(exclude = {"order"})
 public class Payment extends BaseEntity {
 
     @Id

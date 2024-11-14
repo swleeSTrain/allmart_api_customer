@@ -6,7 +6,9 @@ import org.sunbong.allmart_api.point.domain.Point;
 import org.sunbong.allmart_api.point.dto.PointDTO;
 import org.sunbong.allmart_api.point.repository.PointRepository;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -14,14 +16,22 @@ public class PointService {
 
     private final PointRepository pointRepository;
 
+    // 모든 사용자 포인트 조회
+    public List<PointDTO> getAllPoints() {
+        return pointRepository.findAll()
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
     public PointDTO getPointByUserID(Long userID) {
-        Optional<Point> point = pointRepository.findByUserID(userID);
+        Optional<Point> point = pointRepository.findByCustomerID(userID); // 수정된 부분
         return point.map(this::convertToDTO)
                 .orElseThrow(() -> new IllegalArgumentException("Point not found for userID: " + userID));
     }
 
     public void addPoints(Long userID, Integer pointsToAdd) {
-        Point point = pointRepository.findByUserID(userID)
+        Point point = pointRepository.findByCustomerID(userID) // 수정된 부분
                 .orElse(Point.builder()
                         .customerID(userID)
                         .totalPoints(0)
@@ -35,7 +45,7 @@ public class PointService {
     }
 
     public void deductPoints(Long userID, Integer pointsToDeduct) {
-        Point point = pointRepository.findByUserID(userID)
+        Point point = pointRepository.findByCustomerID(userID) // 수정된 부분
                 .orElseThrow(() -> new IllegalArgumentException("Point not found for userID: " + userID));
         if (point.getTotalPoints() < pointsToDeduct) {
             throw new IllegalArgumentException("Insufficient points for userID: " + userID);

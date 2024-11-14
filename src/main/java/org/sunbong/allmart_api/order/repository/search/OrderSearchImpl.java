@@ -1,20 +1,20 @@
 package org.sunbong.allmart_api.order.repository.search;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.Tuple;
 import com.querydsl.jpa.JPQLQuery;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.sunbong.allmart_api.common.dto.PageRequestDTO;
 import org.sunbong.allmart_api.common.dto.PageResponseDTO;
 import org.sunbong.allmart_api.order.domain.*;
 import org.sunbong.allmart_api.order.dto.OrderListDTO;
-import org.sunbong.allmart_api.order.dto.OrderItemDTO;
-import org.sunbong.allmart_api.payment.domain.Payment;
 import org.sunbong.allmart_api.payment.domain.QPayment;
-import org.sunbong.allmart_api.payment.dto.OrderPaymentDTO;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,17 +29,19 @@ public class OrderSearchImpl extends QuerydslRepositorySupport implements OrderS
     public PageResponseDTO<OrderListDTO> searchOrders(OrderStatus status, String customerId, PageRequestDTO pageRequestDTO) {
         log.info("searchOrders called with status: {}, customerId: {}", status, customerId);
 
-        // Pageable 객체 생성
-        Pageable pageable = PageRequest.of(pageRequestDTO.getPage() - 1, pageRequestDTO.getSize());
+        Pageable pageable = PageRequest.of(
+                pageRequestDTO.getPage() - 1, pageRequestDTO.getSize(),
+                Sort.by("orderID").descending()
+        );
 
         QOrderEntity orderEntity = QOrderEntity.orderEntity;
         QOrderItem orderItem = QOrderItem.orderItem;
         QPayment payment = QPayment.payment;
 
-        // OrderItem을 기준으로 OrderEntity와 Payment를 leftJoin
+        // OrderItem을 기준으로 쿼리 작성
         JPQLQuery<OrderItem> query = from(orderItem)
-                .leftJoin(orderItem.order, orderEntity) // OrderEntity와의 left join
-                .leftJoin(payment).on(payment.order.eq(orderEntity)); // Payment와의 left join
+                .leftJoin(orderItem.order, orderEntity) // OrderEntity와 조인
+                .leftJoin(payment).on(payment.order.eq(orderEntity)); // Payment와 조인
 
         BooleanBuilder builder = new BooleanBuilder();
 
@@ -48,63 +50,42 @@ public class OrderSearchImpl extends QuerydslRepositorySupport implements OrderS
             builder.and(orderEntity.status.eq(status));
         }
 
-        // 고객 ID 검색 조건 (String 타입의 customerId 직접 사용)
+        // 고객 ID 필터링
         if (customerId != null && !customerId.isEmpty()) {
             builder.and(orderEntity.customerId.eq(customerId));
         }
 
-        query.where(builder);
+        query.where(builder).groupBy(orderItem.order);
 
-        // applyPagination을 사용해 페이징 및 정렬 적용
-        JPQLQuery<OrderItem> pageableQuery = getQuerydsl().applyPagination(pageable, query);
+        // Tuple을 사용하여 필요한 데이터 선택
+        JPQLQuery<Tuple> tupleQuery = query.select(
+                orderEntity,
+                orderItem.count(),
+                payment.amount.sum()
+        );
 
-        // 엔티티 조회 및 DTO 변환
-        List<OrderListDTO> dtoList = pageableQuery.fetch().stream()
-                .collect(Collectors.groupingBy(OrderItem::getOrder)) // OrderEntity별로 그룹화
-                .entrySet().stream()
-                .map(entry -> {
-                    OrderEntity order = entry.getKey();
-                    List<OrderItemDTO> orderItems = entry.getValue().stream()
-                            .map(item -> OrderItemDTO.builder()
-                                    .orderItemId(item.getOrderItemID())
-                                    .quantity(item.getQuantity())
-                                    .unitPrice(item.getUnitPrice())
-                                    .productId(item.getProduct().getProductID())
-                                    .productName(item.getProduct().getName())
-                                    .build())
-                            .collect(Collectors.toList());
+        List<Tuple> results = getQuerydsl().applyPagination(pageable, tupleQuery).fetch();
 
-                    // Payment 정보 조회 및 변환
-                    Payment paymentEntity = pageableQuery.select(payment)  // payment 데이터 가져오기
-                            .from(payment)
-                            .where(payment.order.eq(order))
-                            .fetchOne();
+        List<OrderListDTO> dtoList = results.stream().map(tuple -> {
+            OrderEntity order = tuple.get(orderEntity);
+            BigDecimal totalPayment = tuple.get(payment.amount.sum());
 
-                    OrderPaymentDTO paymentDTO = null;
-                    if (paymentEntity != null) {
-                        paymentDTO = OrderPaymentDTO.builder()
-                                .paymentID(paymentEntity.getPaymentID())
-                                .method(paymentEntity.getMethod())
-                                .amount(paymentEntity.getAmount())
-                                .completed(paymentEntity.getCompleted())
-                                .build();
-                    }
-
-                    // OrderEntity -> OrderListDTO 변환
-                    return OrderListDTO.builder()
-                            .orderId(order.getOrderID())
-                            .customerId(order.getCustomerId())
-                            .status(order.getStatus())
-                            .totalAmount(order.getTotalAmount())
-                            .orderTime(order.getCreatedDate())
-                            .orderItems(orderItems)
-                            .payment(paymentDTO) // 결제 정보 추가
-                            .build();
-                })
-                .collect(Collectors.toList());
+            return OrderListDTO.builder()
+                    .orderId(order.getOrderID())
+                    .customerId(order.getCustomerId())
+                    .status(order.getStatus())
+                    .totalAmount(totalPayment != null ? totalPayment : BigDecimal.ZERO)
+                    .orderTime(order.getCreatedDate())
+                    .build();
+        }).collect(Collectors.toList());
 
         long total = query.fetchCount();
 
-        return new PageResponseDTO<>(dtoList, pageRequestDTO, total);
+        return PageResponseDTO.<OrderListDTO>withAll()
+                .dtoList(dtoList)
+                .totalCount(total)
+                .pageRequestDTO(pageRequestDTO)
+                .build();
     }
+
 }

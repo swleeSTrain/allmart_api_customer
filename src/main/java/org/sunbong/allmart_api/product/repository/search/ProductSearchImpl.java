@@ -72,13 +72,14 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
 
         // DTO 변환
         List<ProductListDTO> dtoList = productList.stream()
-                .map(prod -> new ProductListDTO(
-                        prod.getProductID(),
-                        prod.getName(),
-                        prod.getSku(),
-                        prod.getPrice(),
-                        prod.getAttachFiles().get(0).getImageURL() // 첫 번째 이미지 바로 사용
-                )).toList();
+                .map(prod -> ProductListDTO.builder()
+                        .productID(prod.getProductID())
+                        .name(prod.getName())
+                        .sku(prod.getSku())
+                        .price(prod.getPrice())
+                        .thumbnailImage(prod.getAttachFiles().isEmpty() ? null : prod.getAttachFiles().get(0).getImageURL())
+                        .build()
+                ).collect(Collectors.toList());
 
         return PageResponseDTO.<ProductListDTO>withAll()
                 .dtoList(dtoList)
