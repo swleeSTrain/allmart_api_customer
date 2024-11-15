@@ -1,4 +1,5 @@
-package org.sunbong.allmart_api.point.dto;
+package org.sunbong.allmart_api.customer.dto;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +10,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PointDTO {
-    private Long customerID;
-    private Integer totalPoints;
-}
+public class CustomerListDTO {
 
+    private Long customerID;
+    private String name;
+    private String phoneNumber;
+    private int loyaltyPoints;
+
+}

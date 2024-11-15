@@ -1,13 +1,12 @@
 package org.sunbong.allmart_api.qrcode.domain;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+import org.sunbong.allmart_api.customer.domain.Customer;
 
 import java.time.LocalDateTime;
 
@@ -15,6 +14,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString(exclude = "customer")
 public class QrCode {
 
     @Id
@@ -41,6 +41,9 @@ public class QrCode {
     @Enumerated
     private QrCodeType qrCodeType;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customerID", referencedColumnName = "customerID", nullable = false)
+    private Customer customer;
 
 
 }
