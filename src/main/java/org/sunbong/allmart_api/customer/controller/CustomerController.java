@@ -2,17 +2,20 @@ package org.sunbong.allmart_api.customer.controller;
 
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.sunbong.allmart_api.customer.dto.CustomerRequestDTO;
 import org.sunbong.allmart_api.customer.service.CustomerService;
 
 @Controller
 @RestController("/customer")
 @RequiredArgsConstructor
+@Log4j2
 public class CustomerController {
 
     private final CustomerService customerService;
@@ -23,9 +26,14 @@ public class CustomerController {
     }
 
     @PostMapping("/signUp/phoneNumber/{phoneNum}")
-    public ResponseEntity<String> phoneNumberSignUp(@PathVariable("phoneNum") String phoneNumber) {
-        return null;
+    public ResponseEntity<String> phoneNumberSignUp(@PathVariable("phoneNum") String phoneNum) {
+
+        CustomerRequestDTO customerRequestDTO = CustomerRequestDTO.builder()
+                .phoneNumber(phoneNum)
+                .build();
+
+        customerService.addMemberWithPhoneNumber(customerRequestDTO);
+        log.info("전화번호 가등록 회원 생성");
+        return ResponseEntity.ok("전화번호 간편 로그인 성공");
     }
-
-
 }
