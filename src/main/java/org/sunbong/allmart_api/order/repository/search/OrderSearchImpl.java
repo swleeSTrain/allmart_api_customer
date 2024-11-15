@@ -44,7 +44,14 @@ public class OrderSearchImpl extends QuerydslRepositorySupport implements OrderS
                 .leftJoin(payment).on(payment.order.eq(orderEntity)); // Payment와 조인
 
         BooleanBuilder builder = new BooleanBuilder();
+        String keyword = pageRequestDTO.getKeyword();
+        String type = pageRequestDTO.getType();
 
+        if (keyword != null && type != null) {
+            if (type.contains("customerId")) {
+                builder.or(orderEntity.customerId.containsIgnoreCase(keyword));
+            }
+        }
         // 주문 상태 필터링
         if (status != null) {
             builder.and(orderEntity.status.eq(status));
