@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PointDTO {
-    private Long userID;
+    private Long customerID;
     private Integer totalPoints;
 }
 

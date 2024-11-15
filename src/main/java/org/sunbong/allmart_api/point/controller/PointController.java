@@ -6,12 +6,21 @@ import org.springframework.web.bind.annotation.*;
 import org.sunbong.allmart_api.point.dto.PointDTO;
 import org.sunbong.allmart_api.point.service.PointService;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/api/points")
+@RequestMapping("/api/v1/points")
 @RequiredArgsConstructor
 public class PointController {
 
     private final PointService pointService;
+
+    // 모든 사용자 포인트 조회
+    @GetMapping
+    public ResponseEntity<List<PointDTO>> getAllPoints() {
+        List<PointDTO> allPoints = pointService.getAllPoints();
+        return ResponseEntity.ok(allPoints);
+    }
 
     // 특정 사용자 포인트 조회
     @GetMapping("/{userID}")
