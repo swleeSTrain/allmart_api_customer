@@ -24,16 +24,16 @@ public class PointService {
                 .collect(Collectors.toList());
     }
 
-    public PointDTO getPointByUserID(Long userID) {
-        Optional<Point> point = pointRepository.findByCustomerID(userID); // 수정된 부분
+    public PointDTO getPointByUserID(Long customerID) {
+        Optional<Point> point = pointRepository.findByCustomerID(customerID); // 수정된 부분
         return point.map(this::convertToDTO)
-                .orElseThrow(() -> new IllegalArgumentException("Point not found for userID: " + userID));
+                .orElseThrow(() -> new IllegalArgumentException("Point not found for customerID: " + customerID));
     }
 
-    public void addPoints(Long userID, Integer pointsToAdd) {
-        Point point = pointRepository.findByCustomerID(userID) // 수정된 부분
+    public void addPoints(Long customerID, Integer pointsToAdd) {
+        Point point = pointRepository.findByCustomerID(customerID) // 수정된 부분
                 .orElse(Point.builder()
-                        .customerID(userID)
+                        .customerID(customerID)
                         .totalPoints(0)
                         .build());
         point = Point.builder()
@@ -44,11 +44,11 @@ public class PointService {
         pointRepository.save(point);
     }
 
-    public void deductPoints(Long userID, Integer pointsToDeduct) {
-        Point point = pointRepository.findByCustomerID(userID) // 수정된 부분
-                .orElseThrow(() -> new IllegalArgumentException("Point not found for userID: " + userID));
+    public void deductPoints(Long customerID, Integer pointsToDeduct) {
+        Point point = pointRepository.findByCustomerID(customerID) // 수정된 부분
+                .orElseThrow(() -> new IllegalArgumentException("Point not found for customerID: " + customerID));
         if (point.getTotalPoints() < pointsToDeduct) {
-            throw new IllegalArgumentException("Insufficient points for userID: " + userID);
+            throw new IllegalArgumentException("Insufficient points for customerID: " + customerID);
         }
         point = Point.builder()
                 .pointID(point.getPointID())
@@ -60,7 +60,7 @@ public class PointService {
 
     private PointDTO convertToDTO(Point point) {
         return PointDTO.builder()
-                .userID(point.getCustomerID())
+                .customerID(point.getCustomerID())
                 .totalPoints(point.getTotalPoints())
                 .build();
     }
