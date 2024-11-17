@@ -43,15 +43,11 @@ public class Product extends BaseEntity {
     private Category category;
 
     public void addFile(String filename) {
-        int nextOrd = attachFiles.stream()
-                .mapToInt(ProductImage::getOrd)
-                .max()
-                .orElse(-1) + 1;  // 다음 ord 값 계산
-        attachFiles.add(new ProductImage(filename, nextOrd));  // 고유한 ord로 추가
+        attachFiles.add(new ProductImage(filename, attachFiles.size()));
     }
 
-    public void deleteFileByOrd(List<Integer> ordsToDelete) {
-        this.attachFiles.removeIf(file -> ordsToDelete.contains(file.getOrd()));
+    public void clearFiles() {
+        attachFiles.clear();
     }
 }
 

@@ -18,8 +18,6 @@ public class ProductEditDTO {
     private String name;
     private String sku;
     private BigDecimal price;
-    private List<MultipartFile> files; // 새로운 파일 목록
-    private List<Integer> ordsToDelete; // 삭제할 파일 ord 목록으로 변경
-    private Long categoryID;
-
+    private List<MultipartFile> files;
+    private Long categoryID;           // 변경할 카테고리 ID
 }
