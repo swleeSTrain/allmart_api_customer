@@ -98,22 +98,20 @@ public class ProductService {
             existingProduct = existingProduct.toBuilder().category(newCategory).build();
         }
 
-        // 새로운 파일 저장 및 삭제할 ord 처리
-        List<String> filesToAdd = fileUtil.saveFiles(dto.getFiles());
-        List<Integer> ordsToDelete = dto.getOrdsToDelete() != null ? dto.getOrdsToDelete() : List.of();
+        // 기존 파일 초기화
+        existingProduct.clearFiles();
 
-        // 기존 Product 객체 업데이트
+        // 새로운 파일 저장
+        List<String> filesToAdd = fileUtil.saveFiles(dto.getFiles());
+
+        filesToAdd.forEach(existingProduct::addFile);
+
+        // 상품 정보 업데이트
         Product updatedProduct = existingProduct.toBuilder()
                 .name(dto.getName() != null ? dto.getName() : existingProduct.getName())
                 .sku(dto.getSku() != null ? dto.getSku() : existingProduct.getSku())
                 .price(dto.getPrice() != null ? dto.getPrice() : existingProduct.getPrice())
                 .build();
-
-        // 파일 삭제 적용
-        updatedProduct.deleteFileByOrd(ordsToDelete);
-
-        // 파일 추가 시 ord 값 계산 및 추가
-        filesToAdd.forEach(fileName -> updatedProduct.addFile(fileName));  // 고유한 ord로 추가
 
         // 업데이트된 상품 저장
         productRepository.save(updatedProduct);

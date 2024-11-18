@@ -117,6 +117,7 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
                 .name(result.getName())
                 .sku(result.getSku())
                 .price(result.getPrice())
+                .categoryID(result.getCategory().getCategoryID())
                 .attachFiles(attachFiles)
                 .createdDate(result.getCreatedDate())
                 .modifiedDate(result.getModifiedDate())
