@@ -89,7 +89,6 @@ public class ProductServiceTest {
                 .sku("UPDATED-SKU")
                 .price(BigDecimal.valueOf(3500))
                 .files(List.of(newMockFile)) // 새 파일 추가
-                .ordsToDelete(List.of(0)) // ord가 0인 파일 삭제
                 .categoryID(2L) // 변경할 카테고리 ID 전달
                 .build();
 
