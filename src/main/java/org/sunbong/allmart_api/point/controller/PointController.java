@@ -9,7 +9,7 @@ import org.sunbong.allmart_api.point.service.PointService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/points")
+@RequestMapping("/api/v1/points")
 @RequiredArgsConstructor
 public class PointController {
 

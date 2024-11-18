@@ -9,7 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.sunbong.allmart_api.category.domain.Category;
 import org.sunbong.allmart_api.category.domain.QCategory;
-import org.sunbong.allmart_api.category.dto.CategoryListDTO;
+import org.sunbong.allmart_api.category.dto.CategoryDTO;
 import org.sunbong.allmart_api.common.dto.PageRequestDTO;
 import org.sunbong.allmart_api.common.dto.PageResponseDTO;
 
@@ -24,7 +24,7 @@ public class CategorySearchImpl extends QuerydslRepositorySupport implements Cat
     }
 
     @Override
-    public PageResponseDTO<CategoryListDTO> list(PageRequestDTO pageRequestDTO) {
+    public PageResponseDTO<CategoryDTO> list(PageRequestDTO pageRequestDTO) {
 
         log.info("-------------------list----------");
 
@@ -56,18 +56,39 @@ public class CategorySearchImpl extends QuerydslRepositorySupport implements Cat
         long total = query.fetchCount();
 
         // DTO 변환
-        List<CategoryListDTO> dtoList = categoryList.stream()
-                .map(cate -> CategoryListDTO.builder()
+        List<CategoryDTO> dtoList = categoryList.stream()
+                .map(cate -> CategoryDTO.builder()
                         .categoryID(cate.getCategoryID())
                         .name(cate.getName())
                         .build()
                 ).collect(Collectors.toList());
 
 
-        return PageResponseDTO.<CategoryListDTO>withAll()
+        return PageResponseDTO.<CategoryDTO>withAll()
                 .dtoList(dtoList)
                 .totalCount(total)
                 .pageRequestDTO(pageRequestDTO)
+                .build();
+    }
+
+    public CategoryDTO readById(Long categoryID) {
+
+        log.info("-------------------read----------");
+
+        QCategory category = QCategory.category;
+
+        JPQLQuery<Category> query = from(category)
+                .where(category.categoryID.eq(categoryID));
+
+        Category result = query.fetchOne();
+
+        if(result == null) {
+            return null;
+        }
+
+        return CategoryDTO.builder()
+                .categoryID(result.getCategoryID())
+                .name(result.getName())
                 .build();
     }
 }
