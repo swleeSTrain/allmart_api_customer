@@ -3,6 +3,7 @@ package org.sunbong.allmart_api.order.controller;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +11,7 @@ import org.sunbong.allmart_api.common.dto.PageRequestDTO;
 import org.sunbong.allmart_api.common.dto.PageResponseDTO;
 import org.sunbong.allmart_api.order.domain.OrderStatus;
 import org.sunbong.allmart_api.order.dto.NaverChatbotOrderDTO;
+import org.sunbong.allmart_api.order.dto.OrderItemDTO;
 import org.sunbong.allmart_api.order.dto.OrderListDTO;
 import org.sunbong.allmart_api.order.service.OrderService;
 
@@ -17,6 +19,7 @@ import org.sunbong.allmart_api.order.service.OrderService;
 @RequestMapping("/api/v1/orders")
 @RequiredArgsConstructor
 @Validated  // 클래스 전체에 유효성 검사 적용
+@Log4j2
 public class OrderController {
 
     private final OrderService orderService;
@@ -48,33 +51,19 @@ public class OrderController {
         return ResponseEntity.noContent().build();
     }
 
-    // 주문 생성
+    // 주문 생성 (음성 주문 처리)
     @PostMapping("/voice")
-    public ResponseEntity<String> createVoiceOrder(@RequestBody NaverChatbotOrderDTO naverOrderDTO) {
+    public ResponseEntity<String> createOrder(@RequestBody NaverChatbotOrderDTO naverChatbotOrderDTO) {
         String productName = null;
         int quantity = 0;
-
-        // JSON 데이터에서 상품명과 수량 추출
-        for (NaverChatbotOrderDTO.Bubble bubble : naverOrderDTO.getBubbles()) {
-            for (NaverChatbotOrderDTO.Bubble.Slot slot : bubble.getSlot()) {
-                if ("상품종류".equals(slot.getName())) {
-                    productName = slot.getValue();
-                } else if ("수량".equals(slot.getName())) {
-                    try {
-                        quantity = Integer.parseInt(slot.getValue());
-                    } catch (NumberFormatException e) {
-                        return ResponseEntity.badRequest().body("Invalid quantity format.");
-                    }
-                }
-            }
-        }
-
-        if (productName == null || quantity <= 0) {
-            return ResponseEntity.badRequest().body("Invalid product name or quantity.");
-        }
+        log.info("++++++++++++++++++++++++++++++++++++++++++=");
+        log.info(naverChatbotOrderDTO.toString());
+        log.info("++++++++++++++++++++++++++++++++++++++++++=");
 
         // 주문 생성 서비스 호출
-        orderService.createOrderFromVoice(productName, quantity, naverOrderDTO.getUserId());
+        orderService.createOrderFromVoice(naverChatbotOrderDTO.getProductName(),naverChatbotOrderDTO.getQuantity(),naverChatbotOrderDTO.getUserId());
+        log.info("+++++++++++++++++++++++++++++++++++++++++++");
+
         return ResponseEntity.ok("Order created successfully.");
     }
 }
