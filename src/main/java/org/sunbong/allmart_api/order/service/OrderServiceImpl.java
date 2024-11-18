@@ -82,37 +82,29 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void createOrderFromVoice(String name, int quantity, String userId) {
-        if (name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("Product name cannot be empty");
-        }
-
+    public void createOrderFromVoice(String productName, int quantity, String userId) {
         // Product 조회
-        Product product = productRepository.findByName(name)
-                .orElseThrow(() -> new ProductNotFoundException("Product not found: " + name));
+        Product product = productRepository.findByName(productName)
+                .orElseThrow(() -> new ProductNotFoundException("Product not found: " + productName));
 
-        // 총 금액 계산 (BigDecimal로 정확하게 처리)
+        // OrderEntity 생성 (총 금액은 미리 계산하여 설정)
         BigDecimal totalAmount = product.getPrice().multiply(BigDecimal.valueOf(quantity));
-
-        // OrderEntity 생성 (상태는 대기 중, 총 금액을 미리 계산하여 설정)
         OrderEntity order = OrderEntity.builder()
                 .customerId(userId)
                 .status(OrderStatus.PENDING)
-                .totalAmount(totalAmount)
+                .totalAmount(totalAmount)  // 총 금액 미리 설정
                 .build();
 
         // OrderEntity 저장
-        order = orderRepository.save(order);
+        orderRepository.save(order);
 
-        // OrderItem 생성
+        // OrderItem 생성 및 저장
         OrderItem orderItem = OrderItem.builder()
-                .order(order)           // OrderItem에 OrderEntity를 설정
-                .product(product)       // Product 설정
-                .quantity(quantity)     // 수량 설정
-                .unitPrice(product.getPrice())  // 가격 설정
+                .order(order)
+                .product(product)
+                .quantity(quantity)
+                .unitPrice(product.getPrice())
                 .build();
-
-        // OrderItem 저장
         orderItemRepository.save(orderItem);
     }
 
