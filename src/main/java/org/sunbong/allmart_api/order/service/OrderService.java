@@ -15,5 +15,5 @@ public interface OrderService {
 
     void changeOrderStatus(Long orderId, OrderStatus newStatus); // 주문 상태 변경 메서드
 
-    void createOrderFromVoice(String productName, int quantity, String userId);
+    void createOrderFromVoice(String name, int quantity, String userId);
 }
