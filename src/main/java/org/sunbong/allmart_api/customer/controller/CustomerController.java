@@ -5,17 +5,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.sunbong.allmart_api.customer.dto.CustomerRequestDTO;
 import org.sunbong.allmart_api.customer.service.CustomerService;
 
-@Controller
-@RestController("/customer")
+
+@RestController
 @RequiredArgsConstructor
 @Log4j2
+@RequestMapping("/api/v1/customer")
 public class CustomerController {
 
     private final CustomerService customerService;
@@ -25,11 +23,12 @@ public class CustomerController {
         return ResponseEntity.ok("전화번호설정 페이지?");
     }
 
-    @PostMapping("/signUp/phoneNumber/{phoneNum}")
-    public ResponseEntity<String> phoneNumberSignUp(@PathVariable("phoneNum") String phoneNum) {
+    @CrossOrigin(origins = "http://localhost:5173")
+    @PostMapping("/signUp/phoneNumber/{phoneNumber}")
+    public ResponseEntity<String> phoneNumberSignUp(@PathVariable("phoneNumber") String phoneNumber ) {
 
         CustomerRequestDTO customerRequestDTO = CustomerRequestDTO.builder()
-                .phoneNumber(phoneNum)
+                .phoneNumber(phoneNumber)
                 .build();
 
         customerService.addMemberWithPhoneNumber(customerRequestDTO);
