@@ -26,7 +26,7 @@ public class CustomerController {
     @CrossOrigin(origins = "http://localhost:5173")
     @PostMapping("/signUp/phoneNumber/{phoneNumber}")
     public ResponseEntity<String> phoneNumberSignUp(@PathVariable("phoneNumber") String phoneNumber ) {
-
+        //
         CustomerRequestDTO customerRequestDTO = CustomerRequestDTO.builder()
                 .phoneNumber(phoneNumber)
                 .build();
