@@ -99,15 +99,14 @@ public class CustomerService {
         }
 
 
+    // 중복가입 여부 확인
+    public void checkDuplicateRegistration(CustomerRequestDTO customerRequestDTO) {
+        if (customerRepository.existsByPhoneNumber(customerRequestDTO.getPhoneNumber())) {
+            throw new IllegalArgumentException("이미 등록된 전화번호입니다.");
+        }
 
 
-
-
-
-
-
-
-
+    }
 
 
 }

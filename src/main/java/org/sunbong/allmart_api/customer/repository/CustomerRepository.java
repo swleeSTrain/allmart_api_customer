@@ -20,5 +20,6 @@ public interface CustomerRepository extends JpaRepository<Customer, Long>, Custo
 
     void deleteByPhoneNumber(String phoneNumber);
 
+    boolean existsByPhoneNumber(String phoneNumber);
 
 }
