@@ -91,36 +91,45 @@ public class ProductService {
         Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
 
+        // 카테고리 변경 처리
         if (dto.getCategoryID() != null) {
-            // 카테고리 조회 및 적용
             Category newCategory = categoryRepository.findById(dto.getCategoryID())
                     .orElseThrow(() -> new IllegalArgumentException("Category not found"));
             existingProduct = existingProduct.toBuilder().category(newCategory).build();
         }
 
-        // 새로운 파일 저장 및 삭제할 ord 처리
-        List<String> filesToAdd = fileUtil.saveFiles(dto.getFiles());
-        List<Integer> ordsToDelete = dto.getOrdsToDelete() != null ? dto.getOrdsToDelete() : List.of();
+        // 기존 파일 처리
+        List<String> retainedFiles = dto.getExistingFileNames();
 
-        // 기존 Product 객체 업데이트
+        if (retainedFiles != null) {
+            // 기존 파일 중 삭제된 파일 처리 (retainedFiles에 포함되지 않은 파일 삭제)
+            existingProduct.getAttachFiles()
+                    .removeIf(file -> !retainedFiles.contains(file.getImageURL()));
+        } else {
+            // retainedFiles가 null이면 모든 파일을 삭제
+            existingProduct.clearFiles();
+        }
+
+        // 새 파일 저장
+        if (dto.getFiles() != null && !dto.getFiles().isEmpty()) {
+            // 파일 저장 로직 확인: 파일이 제대로 저장되고 경로가 반환되는지 확인
+            List<String> newFileNames = fileUtil.saveFiles(dto.getFiles());
+
+            // 새로 저장된 파일들 addFile을 통해 기존 Product에 추가
+            newFileNames.forEach(existingProduct::addFile);
+        }
+
+        // 상품 정보 업데이트
         Product updatedProduct = existingProduct.toBuilder()
                 .name(dto.getName() != null ? dto.getName() : existingProduct.getName())
                 .sku(dto.getSku() != null ? dto.getSku() : existingProduct.getSku())
                 .price(dto.getPrice() != null ? dto.getPrice() : existingProduct.getPrice())
                 .build();
 
-        // 파일 삭제 적용
-        updatedProduct.deleteFileByOrd(ordsToDelete);
-
-        // 파일 추가 시 ord 값 계산 및 추가
-        filesToAdd.forEach(fileName -> updatedProduct.addFile(fileName));  // 고유한 ord로 추가
-
         // 업데이트된 상품 저장
         productRepository.save(updatedProduct);
 
         return updatedProduct.getProductID();
     }
-
-
 
 }
