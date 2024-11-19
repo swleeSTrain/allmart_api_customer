@@ -67,24 +67,24 @@ public class OrderSearchImpl extends QuerydslRepositorySupport implements OrderS
         // Tuple을 사용하여 필요한 데이터 선택
         JPQLQuery<Tuple> tupleQuery = query.select(
                 orderEntity,
-                orderItem.count(),
-                payment.amount.sum()
+                orderItem.count()
         );
 
         List<Tuple> results = getQuerydsl().applyPagination(pageable, tupleQuery).fetch();
 
         List<OrderListDTO> dtoList = results.stream().map(tuple -> {
             OrderEntity order = tuple.get(orderEntity);
-            BigDecimal totalPayment = tuple.get(payment.amount.sum());
+
 
             return OrderListDTO.builder()
                     .orderId(order.getOrderID())
                     .customerId(order.getCustomerId())
                     .status(order.getStatus())
-                    .totalAmount(totalPayment != null ? totalPayment : BigDecimal.ZERO)
+                    .totalAmount(order.getTotalAmount() != null ? order.getTotalAmount() : BigDecimal.ZERO)
                     .orderTime(order.getCreatedDate())
                     .build();
         }).collect(Collectors.toList());
+
 
         long total = query.fetchCount();
 
