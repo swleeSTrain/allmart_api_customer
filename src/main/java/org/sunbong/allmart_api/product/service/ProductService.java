@@ -119,6 +119,7 @@ public class ProductService {
             newFileNames.forEach(existingProduct::addFile);
         }
 
+
         // 상품 정보 업데이트
         Product updatedProduct = existingProduct.toBuilder()
                 .name(dto.getName() != null ? dto.getName() : existingProduct.getName())
