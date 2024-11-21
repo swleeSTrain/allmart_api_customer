@@ -1,0 +1,15 @@
+package org.sunbong.allmart_api.flyer.repository.search;
+
+import org.sunbong.allmart_api.common.dto.PageRequestDTO;
+import org.sunbong.allmart_api.common.dto.PageResponseDTO;
+import org.sunbong.allmart_api.flyer.dto.FlyerListDTO;
+import org.sunbong.allmart_api.flyer.dto.FlyerReadDTO;
+import org.sunbong.allmart_api.product.dto.ProductListDTO;
+import org.sunbong.allmart_api.product.dto.ProductReadDTO;
+
+public interface FlyerSearch {
+
+    PageResponseDTO<FlyerListDTO> list(PageRequestDTO pageRequestDTO);
+
+    FlyerReadDTO readById(Long productID);
+}
