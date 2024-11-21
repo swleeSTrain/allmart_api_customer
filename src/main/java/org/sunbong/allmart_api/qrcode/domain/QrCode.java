@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @ToString(exclude = "customer")
 @Getter
+@Table(name = "tbl_qrcode")
 public class QrCode {
 
     @Id
@@ -36,7 +37,7 @@ public class QrCode {
     private boolean isExpired;
 
     @Column(nullable = false)
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     private QrCodeType qrCodeType;
 
     @ManyToOne(fetch = FetchType.LAZY)
