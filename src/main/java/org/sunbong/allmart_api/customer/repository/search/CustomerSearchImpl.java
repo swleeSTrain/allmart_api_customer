@@ -45,6 +45,8 @@ public class CustomerSearchImpl extends QuerydslRepositorySupport  implements Cu
             QrCode code = tuple.get(qrCode);
 
             return cust;
+
+
         }).collect(Collectors.toList());
 
         // 전체 카운트 조회(페이징을 위해)
