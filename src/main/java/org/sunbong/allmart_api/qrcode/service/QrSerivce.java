@@ -5,11 +5,14 @@ import com.google.zxing.EncodeHintType;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
+import com.google.zxing.qrcode.encoder.QRCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.sunbong.allmart_api.customer.domain.Customer;
 import org.sunbong.allmart_api.qrcode.domain.QrCode;
 import org.sunbong.allmart_api.qrcode.domain.QrCodeType;
 import org.sunbong.allmart_api.qrcode.dto.QrRequestDto;
+import org.sunbong.allmart_api.qrcode.dto.QrResponseDto;
 import org.sunbong.allmart_api.qrcode.repository.QrRepository;
 
 
@@ -19,9 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static org.sunbong.allmart_api.qrcode.domain.QrCodeVerifyUrl.*;
 
@@ -38,7 +39,9 @@ public class QrSerivce {
     private static final int QR_CODE_ORDER_EXPIRED = 1;
     private static final int QR_CODE_PAYMENT_EXPIRED = 1;
 
-    public String generateQRCode(QrRequestDto qrRequestDto, QrCodeType qrCodeType) {
+    public List<String> generateQRCode(QrRequestDto qrRequestDto, QrCodeType qrCodeType) {
+
+        List<String> list = new ArrayList<>();
 
         try {
             //QR 코드 설정
@@ -51,27 +54,30 @@ public class QrSerivce {
 
             LocalDateTime expireTime;
             String qrCodeUrl;
-            String encoded= URLEncoder.encode(qrRequestDto.getData(), StandardCharsets.UTF_8);
+            String encodedPhoneNumber= URLEncoder.encode(qrRequestDto.getPhoneNumber(), StandardCharsets.UTF_8);
+            String encodedCustomerId= URLEncoder.encode(qrRequestDto.getCustomerID().toString(), StandardCharsets.UTF_8);
+
+
             switch (qrCodeType){
 
                 case QR_CODE_SIGNUP_DIRECTORY:
                     expireTime = LocalDateTime.now().plusMonths(QR_CODE_SIGNUP_EXPIRED);
-                    qrCodeUrl = QR_CODE_SIGNUP_VERIFY_URL.getURL() + encoded;
+                    qrCodeUrl = QR_CODE_SIGNUP_VERIFY_URL.getURL() + encodedPhoneNumber + "&customerID=" + encodedCustomerId;
                     break;
 
                 case QR_CODE_ORDER_DIRECTORY :
                     expireTime = LocalDateTime.now().plusMonths(QR_CODE_ORDER_EXPIRED);
-                    qrCodeUrl =  QR_CODE_ORDER_VERIFY_URL.getURL()+ encoded;
+                    qrCodeUrl =  QR_CODE_ORDER_VERIFY_URL.getURL()+ encodedPhoneNumber + encodedCustomerId;
                     break;
 
                 case QR_CODE_PAYMENT_DIRECTORY:
                     expireTime = LocalDateTime.now().plusMonths(QR_CODE_PAYMENT_EXPIRED);
-                    qrCodeUrl = QR_CODE_PAYMENT_VERIFY_URL.getURL() + encoded;
+                    qrCodeUrl = QR_CODE_PAYMENT_VERIFY_URL.getURL() + encodedPhoneNumber + encodedCustomerId;
                     break;
 
                 default:
                     expireTime = LocalDateTime.now().plusMonths(QR_CODE_SIGNUP_EXPIRED);
-                    qrCodeUrl = QR_CODE_SIGNUP_VERIFY_URL.getURL() + encoded;
+                    qrCodeUrl = QR_CODE_SIGNUP_VERIFY_URL.getURL() + encodedPhoneNumber + encodedCustomerId;
             }
 
             //QR 코드 생성
@@ -88,29 +94,50 @@ public class QrSerivce {
             MatrixToImageWriter.writeToPath(bitMatrix, "PNG", path);
 
 
+            Customer customer = Customer.builder()
+                    .customerID(qrRequestDto.getCustomerID())
+                    .phoneNumber(qrRequestDto.getPhoneNumber())
+                    .build();
 
             QrCode qrCode = QrCode.builder()
                     .fileName(fileName)
                     .createTime(LocalDateTime.now())
-                    .data(qrRequestDto.getData())
+                    .data(qrRequestDto.getPhoneNumber())
+                    .customer(customer)
                     .qrCodeType(qrCodeType)
                     .expireTime(expireTime)
                     .qrCodeURL(qrCodeUrl)
                     .build();
 
             qrRepository.save(qrCode);
-            return filePath;
+            list.add(fileName);
+            list.add(qrCodeUrl);
+            return list;
 
         }catch(Exception e){
             e.printStackTrace();
-            return "QR 코드 생성 중 오류가 발생했습니다.";
+            return list;
         }
 
     }
 
-    private boolean isExpiredQRCode(LocalDateTime now, String date){
-        LocalDateTime dateTime = LocalDateTime.parse(date);
-        return now.isAfter(dateTime.plusMinutes(QR_CODE_SIGNUP_EXPIRED) );
+    public String verifySignUpQRCode(String token) {
+        String extension = ".png";
+        Optional<QrCode> findQrCode = qrRepository.findById(token + String.valueOf(extension));
+        if( findQrCode.isPresent()) {
+            if(isExpiredQRCode(findQrCode.get().getExpireTime())){
+                QrCode qrCode = findQrCode.get().toBuilder().isExpired(true).build();
+                qrRepository.save(qrCode);
+                return "verify success";
+            }
+        }
+        return "verification fail";
+    }
+
+
+
+    private boolean isExpiredQRCode(LocalDateTime date){
+        return LocalDateTime.now().isAfter(date.plusMinutes(QR_CODE_SIGNUP_EXPIRED) );
     }
 
 }

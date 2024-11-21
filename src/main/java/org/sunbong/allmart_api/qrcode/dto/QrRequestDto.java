@@ -15,6 +15,8 @@ import lombok.extern.log4j.Log4j2;
 public class QrRequestDto {
 
     @NotNull
-    private String data;
+    private String phoneNumber;
+
+    private Long customerID;
 
 }
