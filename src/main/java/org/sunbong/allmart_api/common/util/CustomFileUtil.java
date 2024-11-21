@@ -27,7 +27,7 @@ import jakarta.annotation.PostConstruct;
 @RequiredArgsConstructor
 public class CustomFileUtil {
 
-    @Value("${org.sunbong.upload.path}")
+    @Value("${org.allmart_api.upload.path}")
     private String uploadPath;
 
     @PostConstruct
