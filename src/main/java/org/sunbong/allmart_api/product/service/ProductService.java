@@ -62,7 +62,7 @@ public class ProductService {
         // 업로드할 파일이 있을 경우
         if (dto.getFiles() != null && !dto.getFiles().isEmpty()) {
             List<String> savedFileNames = fileUtil.saveFiles(dto.getFiles());
-            savedFileNames.forEach(product::addFile);
+            savedFileNames.forEach(product::addImage);
         }
 
         // Product 저장
@@ -103,11 +103,11 @@ public class ProductService {
 
         if (retainedFiles != null) {
             // 기존 파일 중 삭제된 파일 처리 (retainedFiles에 포함되지 않은 파일 삭제)
-            existingProduct.getAttachFiles()
+            existingProduct.getAttachImages()
                     .removeIf(file -> !retainedFiles.contains(file.getImageURL()));
         } else {
             // retainedFiles가 null이면 모든 파일을 삭제
-            existingProduct.clearFiles();
+            existingProduct.clearImages();
         }
 
         // 새 파일 저장
@@ -116,7 +116,7 @@ public class ProductService {
             List<String> newFileNames = fileUtil.saveFiles(dto.getFiles());
 
             // 새로 저장된 파일들 addFile을 통해 기존 Product에 추가
-            newFileNames.forEach(existingProduct::addFile);
+            newFileNames.forEach(existingProduct::addImage);
         }
 
 
