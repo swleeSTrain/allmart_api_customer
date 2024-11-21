@@ -41,10 +41,10 @@ public class CustomerSearchImpl extends QuerydslRepositorySupport  implements Cu
 
         //'Tuple' 데이터를 'Customer' 객체로 변환
         List<Customer> customers = resultList.stream().map(tuple -> {
-            //Customer cust = tuple.get(customer);
+            Customer cust = tuple.get(customer);
             QrCode code = tuple.get(qrCode);
 
-            //return cust;
+            return cust;
 
 
         }).collect(Collectors.toList());

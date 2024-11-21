@@ -41,7 +41,6 @@ public class QrCode {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customerID", referencedColumnName = "customerID", nullable = true)
-    @Column(name = "customerID", nullable = true)
     private Customer customer;
 
 

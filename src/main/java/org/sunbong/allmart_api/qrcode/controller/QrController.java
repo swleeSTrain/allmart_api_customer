@@ -31,7 +31,7 @@ public class QrController {
 
     @GetMapping("/signUp")
     public ResponseEntity<QrSingUpResponseDTO> generateSinginQRCode(
-            @RequestParam(name = "phoneNumber" ) String phoneNumber, @RequestParam(name = "customerID") String customerId
+            @RequestParam(name = "phoneNumber" ) String phoneNumber, @RequestParam(name = "customerID") Long customerId
     ) {
         QrRequestDto requestDto = QrRequestDto.builder()
                 .phoneNumber(phoneNumber)
@@ -81,11 +81,12 @@ public class QrController {
 
     }
 
-    @GetMapping("/signUp/verify")
+    @GetMapping("/signUp/verify/{token}")
     public ResponseEntity<String> verifySignUpQRCode(@RequestParam("token") String data){
         String result = qrService.verifySignUpQRCode(data);
 
-        return ResponseEntity.ok(result);
+        return ResponseEntity.status(303).header("Location", "/api/v1/qrcode/signUp")
+                .build();
     }
 
 

@@ -5,6 +5,7 @@ import com.google.zxing.EncodeHintType;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
+import com.google.zxing.qrcode.encoder.QRCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.sunbong.allmart_api.customer.domain.Customer;
@@ -54,14 +55,14 @@ public class QrSerivce {
             LocalDateTime expireTime;
             String qrCodeUrl;
             String encodedPhoneNumber= URLEncoder.encode(qrRequestDto.getPhoneNumber(), StandardCharsets.UTF_8);
-            String encodedCustomerId= URLEncoder.encode(qrRequestDto.getCustomerID(), StandardCharsets.UTF_8);
+            String encodedCustomerId= URLEncoder.encode(qrRequestDto.getCustomerID().toString(), StandardCharsets.UTF_8);
 
 
             switch (qrCodeType){
 
                 case QR_CODE_SIGNUP_DIRECTORY:
                     expireTime = LocalDateTime.now().plusMonths(QR_CODE_SIGNUP_EXPIRED);
-                    qrCodeUrl = QR_CODE_SIGNUP_VERIFY_URL.getURL() + encodedPhoneNumber + encodedCustomerId;
+                    qrCodeUrl = QR_CODE_SIGNUP_VERIFY_URL.getURL() + encodedPhoneNumber + "&customerID=" + encodedCustomerId;
                     break;
 
                 case QR_CODE_ORDER_DIRECTORY :
@@ -93,12 +94,16 @@ public class QrSerivce {
             MatrixToImageWriter.writeToPath(bitMatrix, "PNG", path);
 
 
+            Customer customer = Customer.builder()
+                    .customerID(qrRequestDto.getCustomerID())
+                    .phoneNumber(qrRequestDto.getPhoneNumber())
+                    .build();
 
             QrCode qrCode = QrCode.builder()
                     .fileName(fileName)
                     .createTime(LocalDateTime.now())
                     .data(qrRequestDto.getPhoneNumber())
-                    .customer(qrRequestDto.)
+                    .customer(customer)
                     .qrCodeType(qrCodeType)
                     .expireTime(expireTime)
                     .qrCodeURL(qrCodeUrl)

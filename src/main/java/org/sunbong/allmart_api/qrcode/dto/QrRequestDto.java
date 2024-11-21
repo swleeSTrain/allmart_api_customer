@@ -17,6 +17,6 @@ public class QrRequestDto {
     @NotNull
     private String phoneNumber;
 
-    private String customerID;
+    private Long customerID;
 
 }
