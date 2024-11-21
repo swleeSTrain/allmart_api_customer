@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Builder
@@ -19,8 +20,8 @@ public class FlyerReadDTO {
     private String title;
     private String content;
 
-    private List<String> attachFiles;
-    private String audioURL;
+    private List<String> attachImages;
+    private Set<String> audioURL;
 
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;

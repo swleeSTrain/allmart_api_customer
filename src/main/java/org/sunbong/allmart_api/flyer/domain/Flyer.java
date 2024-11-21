@@ -17,7 +17,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@ToString(callSuper = true, exclude = {"attachFiles", "audioURL"})
+@ToString(callSuper = true, exclude = {"attachImages", "audioURL"})
 public class Flyer extends BaseEntity {
 
     @Id
@@ -41,6 +41,22 @@ public class Flyer extends BaseEntity {
     @CollectionTable(name = "tbl_flyer_image")
     @BatchSize(size = 50)
     @Builder.Default
-    private List<FlyerImage> attachFiles = new ArrayList<>();
+    private List<FlyerImage> attachImages = new ArrayList<>();
+
+    public void addImage(String filename) {
+        attachImages.add(new FlyerImage(filename, attachImages.size()));
+    }
+
+    public void clearImages() {
+        attachImages.clear();
+    }
+
+    public void addAudioURL(String audioUrl) {
+        audioURL.add(audioUrl);
+    }
+
+    public void clearAudioURL() {
+        audioURL.clear();
+    }
 
 }
