@@ -11,7 +11,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/v1/**")
-                .allowedOrigins("http://localhost:5174")  // 프론트엔드 도메인
+                .allowedOrigins("http://localhost:5173")  // 프론트엔드 도메인
                 .allowedMethods("GET", "POST", "PUT", "DELETE")
                 .allowedHeaders("*")
                 .allowCredentials(true);
@@ -24,7 +24,5 @@ public class WebConfig implements WebMvcConfigurer {
 
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:///C:/upload/"); // 실제 업로드 경로
-        registry.addResourceHandler("/static/**")
-                .addResourceLocations("classpath:/static/");
     }
 }
