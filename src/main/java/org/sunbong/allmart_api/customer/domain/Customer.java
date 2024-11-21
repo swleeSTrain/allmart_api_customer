@@ -10,7 +10,7 @@ import org.sunbong.allmart_api.common.domain.BaseEntity;
 @Log4j2
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@Builder(toBuilder = true)
 @Getter
 @ToString(callSuper = true)
 @Table(name = "tbl_customer")

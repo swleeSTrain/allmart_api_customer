@@ -3,10 +3,10 @@ spring:
     name: board_api1
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-#    url: jdbc:mariadb://localhost:13306/vgdb
-    url: jdbc:mariadb://10.10.10.54:13306/vgdb
-    username: vgdbuser
-    password: vgdbuser
+    url: jdbc:mariadb://localhost:13306/test
+#    url: jdbc:mariadb://10.10.10.54:13306/vgdb
+    username: bootdbuser
+    password: bootdbuser
 
     hikari:
       minimum-idle: 2
