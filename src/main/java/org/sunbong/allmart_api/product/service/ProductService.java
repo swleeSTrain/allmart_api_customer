@@ -9,6 +9,8 @@ import org.sunbong.allmart_api.category.repository.CategoryRepository;
 import org.sunbong.allmart_api.common.dto.PageRequestDTO;
 import org.sunbong.allmart_api.common.dto.PageResponseDTO;
 import org.sunbong.allmart_api.common.util.CustomFileUtil;
+import org.sunbong.allmart_api.inventory.domain.Inventory;
+import org.sunbong.allmart_api.inventory.repository.InventoryRepository;
 import org.sunbong.allmart_api.product.domain.Product;
 import org.sunbong.allmart_api.product.dto.ProductAddDTO;
 import org.sunbong.allmart_api.product.dto.ProductEditDTO;
@@ -26,6 +28,7 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final InventoryRepository inventoryRepository;
     private final CustomFileUtil fileUtil;
 
     // 조회
@@ -68,6 +71,14 @@ public class ProductService {
         // Product 저장
         Product savedProduct = productRepository.save(product);
 
+        Inventory inventory = Inventory.builder()
+                .product(product)
+                .quantity(0) // 기본값으로 초기화
+                .inStock(1)
+                .build();
+
+        inventoryRepository.save(inventory);
+
         return savedProduct.getProductID();
     }
 
@@ -77,6 +88,8 @@ public class ProductService {
 
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Notice not found with ID: " + id));
+
+        inventoryRepository.deleteByProduct(product);
 
         Long productID = product.getProductID();
         productRepository.deleteById(productID);
