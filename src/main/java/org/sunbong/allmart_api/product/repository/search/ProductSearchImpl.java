@@ -59,7 +59,7 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
 
         // 엔티티 조회
         JPQLQuery<Product> query = from(product)
-                .join(product.attachFiles, attachFile) // 필수 항목이면 join
+                .join(product.attachImages, attachFile) // 필수 항목이면 join
                 .where(builder)
                 .where(attachFile.ord.eq(0)) // 첫 번째 첨부파일만 가져오기
                 .groupBy(product);
@@ -77,7 +77,7 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
                         .name(prod.getName())
                         .sku(prod.getSku())
                         .price(prod.getPrice())
-                        .thumbnailImage(prod.getAttachFiles().isEmpty() ? null : prod.getAttachFiles().get(0).getImageURL())
+                        .thumbnailImage(prod.getAttachImages().isEmpty() ? null : prod.getAttachImages().get(0).getImageURL())
                         .build()
                 ).collect(Collectors.toList());
 
@@ -98,7 +98,7 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
         QProductImage attachFile = QProductImage.productImage;
 
         JPQLQuery<Product> query = from(product)
-                .leftJoin(product.attachFiles, attachFile).fetchJoin()
+                .leftJoin(product.attachImages, attachFile).fetchJoin()
                 .where(product.productID.eq(productID));
 
         Product result = query.fetchOne();
@@ -107,8 +107,8 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
             return null;
         }
 
-        // DTO 변환 (attachFiles의 파일 이름을 문자열 리스트로 변환)
-        List<String> attachFiles = result.getAttachFiles().stream()
+        // DTO 변환 (attachImages의 파일 이름을 문자열 리스트로 변환)
+        List<String> attachImages = result.getAttachImages().stream()
                 .map(file -> file.getImageURL())
                 .collect(Collectors.toList());
 
@@ -118,7 +118,7 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
                 .sku(result.getSku())
                 .price(result.getPrice())
                 .categoryID(result.getCategory().getCategoryID())
-                .attachFiles(attachFiles)
+                .attachImages(attachImages)
                 .createdDate(result.getCreatedDate())
                 .modifiedDate(result.getModifiedDate())
                 .build();

@@ -12,7 +12,8 @@ import org.sunbong.allmart_api.common.dto.PageRequestDTO;
 import org.sunbong.allmart_api.common.dto.PageResponseDTO;
 import org.sunbong.allmart_api.inventory.domain.Inventory;
 import org.sunbong.allmart_api.inventory.domain.QInventory;
-import org.sunbong.allmart_api.inventory.dto.InventoryDTO;
+import org.sunbong.allmart_api.inventory.dto.InventoryListDTO;
+import org.sunbong.allmart_api.product.domain.QProduct;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,32 +26,34 @@ public class InventorySearchImpl extends QuerydslRepositorySupport implements In
     }
 
     @Override
-    public PageResponseDTO<InventoryDTO> searchInventory(PageRequestDTO pageRequestDTO) {
+    public PageResponseDTO<InventoryListDTO> searchInventory(PageRequestDTO pageRequestDTO) {
         log.info("searchInventory called with keyword: {}, type: {}",
                 pageRequestDTO.getKeyword(), pageRequestDTO.getType());
 
         Pageable pageable = PageRequest.of(
                 pageRequestDTO.getPage() - 1,
                 pageRequestDTO.getSize(),
-                Sort.by("inventoryID").ascending()
+                Sort.by("inventoryID").descending()
         );
 
         QInventory inventory = QInventory.inventory;
+        QProduct product = QProduct.product;
 
-        JPQLQuery<Inventory> query = from(inventory);
+        JPQLQuery<Inventory> query = from(inventory)
+                .leftJoin(inventory.product, product);
 
         BooleanBuilder builder = new BooleanBuilder();
 
-        // 검색 조건: SKU 또는 기타 키워드
+        // 검색 조건: SKU 또는 상품명
         if (pageRequestDTO.getKeyword() != null && !pageRequestDTO.getKeyword().isEmpty()) {
             if ("sku".equalsIgnoreCase(pageRequestDTO.getType())) {
-                builder.and(inventory.sku.containsIgnoreCase(pageRequestDTO.getKeyword()));
-            } else {
-                builder.and(inventory.sku.containsIgnoreCase(pageRequestDTO.getKeyword()));
+                builder.and(product.sku.containsIgnoreCase(pageRequestDTO.getKeyword()));
+            } else if ("name".equalsIgnoreCase(pageRequestDTO.getType())) {
+                builder.and(product.name.containsIgnoreCase(pageRequestDTO.getKeyword()));
             }
         }
 
-        // 필터 조건 추가 (예: inStock 여부)
+        // 추가 필터 조건
         if (pageRequestDTO.getInventoryID() != null) {
             builder.and(inventory.inventoryID.eq(pageRequestDTO.getInventoryID()));
         }
@@ -60,7 +63,8 @@ public class InventorySearchImpl extends QuerydslRepositorySupport implements In
         // 데이터 페이징
         JPQLQuery<Tuple> tupleQuery = query.select(
                 inventory.inventoryID,
-                inventory.sku,
+                product.name,
+                product.sku,
                 inventory.quantity,
                 inventory.inStock
         );
@@ -68,9 +72,10 @@ public class InventorySearchImpl extends QuerydslRepositorySupport implements In
         List<Tuple> results = getQuerydsl().applyPagination(pageable, tupleQuery).fetch();
 
         // DTO로 변환
-        List<InventoryDTO> dtoList = results.stream().map(tuple -> InventoryDTO.builder()
+        List<InventoryListDTO> dtoList = results.stream().map(tuple -> InventoryListDTO.builder()
                 .inventoryID(tuple.get(inventory.inventoryID))
-                .sku(tuple.get(inventory.sku))
+                .productName(tuple.get(product.name))
+                .sku(tuple.get(product.sku))
                 .quantity(tuple.get(inventory.quantity))
                 .inStock(tuple.get(inventory.inStock))
                 .build()
@@ -79,10 +84,11 @@ public class InventorySearchImpl extends QuerydslRepositorySupport implements In
         // 전체 데이터 개수
         long total = query.fetchCount();
 
-        return PageResponseDTO.<InventoryDTO>withAll()
+        return PageResponseDTO.<InventoryListDTO>withAll()
                 .dtoList(dtoList)
                 .totalCount(total)
                 .pageRequestDTO(pageRequestDTO)
                 .build();
     }
+
 }
