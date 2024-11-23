@@ -83,7 +83,7 @@ public class ProductService {
     }
 
 
-    // 삭제
+    // 소프트 삭제
     public Long delete(Long id) {
 
         Product product = productRepository.findById(id)

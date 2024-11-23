@@ -32,5 +32,12 @@ public class Inventory extends BaseEntity {
     @Column(name = "inStock", nullable = true)
     private Integer inStock = 1;
 
+    @Builder.Default
+    private boolean delFlag = false;
+
+    public void markAsDeleted() {
+        this.delFlag = true;
+    }
+
 }
 
