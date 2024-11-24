@@ -52,5 +52,9 @@ public class Product extends BaseEntity {
     public void clearImages() {
         attachImages.clear();
     }
+
+    public void softDelete() {
+        this.delFlag = true;
+    }
 }
 

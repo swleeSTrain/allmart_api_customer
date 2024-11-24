@@ -35,7 +35,7 @@ public class Inventory extends BaseEntity {
     @Builder.Default
     private boolean delFlag = false;
 
-    public void markAsDeleted() {
+    public void softDelete() {
         this.delFlag = true;
     }
 
