@@ -7,5 +7,5 @@ import org.sunbong.allmart_api.product.domain.Product;
 
 public interface InventoryRepository extends JpaRepository<Inventory, Long>, InventorySearch {
 
-    void deleteByProduct(Product product);
+    Inventory findByProduct(Product product);
 }

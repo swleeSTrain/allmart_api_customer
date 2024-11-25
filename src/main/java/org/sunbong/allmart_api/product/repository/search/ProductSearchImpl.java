@@ -62,6 +62,7 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
                 .join(product.attachImages, attachFile) // 필수 항목이면 join
                 .where(builder)
                 .where(attachFile.ord.eq(0)) // 첫 번째 첨부파일만 가져오기
+                .where(product.delFlag.eq(false))
                 .groupBy(product);
 
         // 페이징 적용
@@ -99,7 +100,8 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
 
         JPQLQuery<Product> query = from(product)
                 .leftJoin(product.attachImages, attachFile).fetchJoin()
-                .where(product.productID.eq(productID));
+                .where(product.productID.eq(productID))
+                .where(product.delFlag.eq(false));
 
         Product result = query.fetchOne();
 
