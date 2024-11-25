@@ -28,5 +28,6 @@ public class Address extends BaseEntity {
     @Column(length = 500)
     private String fullAddress; // 전체 주소 (도로명 주소 + 상세 주소)
 
+
 }
 
