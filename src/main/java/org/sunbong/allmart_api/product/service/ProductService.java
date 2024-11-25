@@ -2,10 +2,8 @@ package org.sunbong.allmart_api.product.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 import org.sunbong.allmart_api.category.domain.Category;
 import org.sunbong.allmart_api.category.repository.CategoryRepository;
 import org.sunbong.allmart_api.common.dto.PageRequestDTO;
@@ -52,9 +50,6 @@ public class ProductService {
     // 등록
     public Long register(ProductAddDTO dto) throws Exception {
 
-        // 중복 체크
-        validateDuplicate(dto.getName());
-
         // 카테고리 ID로 카테고리 찾기
         Category category = categoryRepository.findById(dto.getCategoryID())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid category ID"));
@@ -88,24 +83,18 @@ public class ProductService {
     }
 
 
-    // 소프트 삭제
+    // 삭제
     public Long delete(Long id) {
 
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Product not found with ID: " + id));
+                .orElseThrow(() -> new IllegalArgumentException("Notice not found with ID: " + id));
 
-        // 연관된 Inventory 소프트 딜리트 처리
-        Inventory inventory = inventoryRepository.findByProduct(product);
-        if (inventory != null) {
-            inventory.softDelete();
-            inventoryRepository.save(inventory);
-        }
+        inventoryRepository.deleteByProduct(product);
 
-        // Product 소프트 딜리트 처리
-        product.softDelete();
-        productRepository.save(product);
+        Long productID = product.getProductID();
+        productRepository.deleteById(productID);
 
-        return product.getProductID();
+        return productID;
     }
 
     // 수정
@@ -114,11 +103,6 @@ public class ProductService {
         // 기존 상품 조회
         Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
-
-        // 중복 체크
-        if (!existingProduct.getName().equals(dto.getName())) {
-            validateDuplicate(dto.getName());
-        }
 
         // 카테고리 변경 처리
         if (dto.getCategoryID() != null) {
@@ -161,13 +145,5 @@ public class ProductService {
 
         return updatedProduct.getProductID();
     }
-
-    // 중복 체크
-    private void validateDuplicate(String name) throws Exception {
-
-        // 409 상태 코드 반환
-        throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 존재하는 상품입니다: " + name);
-    }
-
 
 }
