@@ -32,9 +32,6 @@ public class Product extends BaseEntity {
     @Column(precision = 10, scale = 2, nullable = false)
     private BigDecimal price;
 
-    @Builder.Default
-    private boolean delFlag = false;
-
     @ElementCollection
     @CollectionTable(name = "tbl_product_image")
     @BatchSize(size = 50)
@@ -51,10 +48,6 @@ public class Product extends BaseEntity {
 
     public void clearImages() {
         attachImages.clear();
-    }
-
-    public void softDelete() {
-        this.delFlag = true;
     }
 }
 

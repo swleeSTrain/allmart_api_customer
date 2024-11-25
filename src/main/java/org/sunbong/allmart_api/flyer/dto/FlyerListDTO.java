@@ -17,5 +17,5 @@ public class FlyerListDTO {
 
     private String thumbnailImage; // 썸네일 이미지 URL
 
-//    private int audioCount;
+    private int audioCount;
 }

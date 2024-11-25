@@ -40,8 +40,7 @@ public class InventorySearchImpl extends QuerydslRepositorySupport implements In
         QProduct product = QProduct.product;
 
         JPQLQuery<Inventory> query = from(inventory)
-                .leftJoin(inventory.product, product)
-                .where(product.delFlag.eq(false));
+                .leftJoin(inventory.product, product);
 
         BooleanBuilder builder = new BooleanBuilder();
 

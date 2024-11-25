@@ -2,10 +2,8 @@ package org.sunbong.allmart_api.category.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 import org.sunbong.allmart_api.category.domain.Category;
 import org.sunbong.allmart_api.category.dto.CategoryDTO;
 import org.sunbong.allmart_api.category.repository.CategoryRepository;
@@ -40,7 +38,9 @@ public class CategoryService {
     public Long register(CategoryDTO dto) throws Exception {
 
         // 중복 체크
-        validateDuplicate(dto.getName());
+        if (categoryRepository.findByName(dto.getName()).isPresent()) {
+            throw new Exception("이미 존재하는 카테고리입니다: " + dto.getName());
+        }
 
         // DTO를 엔티티로 변환 후 저장
         Category category = Category.builder()
@@ -70,9 +70,9 @@ public class CategoryService {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid category ID"));
 
-        // 카테고리 이름이 변경된 경우, 자기 이름은 빼고 중복 검사
-        if (!category.getName().equals(dto.getName())) {
-            validateDuplicate(dto.getName());
+        // 카테고리 이름이 변경된 경우, 이름 중복 검사
+        if (!category.getName().equals(dto.getName()) && categoryRepository.findByName(dto.getName()).isPresent()) {
+            throw new Exception("이미 존재하는 카테고리입니다: " + dto.getName());
         }
 
         category = category.toBuilder()
@@ -82,15 +82,6 @@ public class CategoryService {
         Category updatedCategory = categoryRepository.save(category);
 
         return updatedCategory.getCategoryID();
-    }
-
-    // 중복 처리
-    private void validateDuplicate(String name) throws Exception {
-        if (categoryRepository.findByName(name).isPresent()) {
-
-            // 409 상태 코드 반환
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 존재하는 카테고리입니다: " + name);
-        }
     }
 
 }
