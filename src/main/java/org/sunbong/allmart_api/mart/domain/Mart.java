@@ -2,7 +2,12 @@ package org.sunbong.allmart_api.mart.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 import org.sunbong.allmart_api.common.domain.BaseEntity;
+import org.sunbong.allmart_api.product.domain.ProductImage;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "tbl_mart")
@@ -10,7 +15,7 @@ import org.sunbong.allmart_api.common.domain.BaseEntity;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
+@ToString(exclude = {"attachLogo"})
 public class Mart extends BaseEntity {
 
     @Id
@@ -24,9 +29,6 @@ public class Mart extends BaseEntity {
     @Column(name = "phoneNumber", length = 13, nullable = false)
     private String phoneNumber; // 전화번호
 
-    @Column(name = "logo", nullable = false)
-    private String logo; // 마트로고
-
     @Column(name = "template", length = 20, nullable = false)
     private String template; // 템플릿
 
@@ -35,4 +37,11 @@ public class Mart extends BaseEntity {
 
     @Column(name = "certificate", length = 255, nullable = false)
     private String certificate; // 사업자등록증
+
+    @ElementCollection
+    @CollectionTable(name = "tbl_mart_logo")
+    @BatchSize(size = 50)
+    @Builder.Default
+    private List<MartLogo> attachLogo = new ArrayList<>();
+
 }
