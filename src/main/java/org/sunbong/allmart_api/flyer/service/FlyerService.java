@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.sunbong.allmart_api.common.dto.PageRequestDTO;
 import org.sunbong.allmart_api.common.dto.PageResponseDTO;
+import org.sunbong.allmart_api.common.util.CustomFileUtil;
+import org.sunbong.allmart_api.flyer.dto.FlyerAddDTO;
 import org.sunbong.allmart_api.flyer.dto.FlyerListDTO;
 import org.sunbong.allmart_api.flyer.dto.FlyerReadDTO;
 import org.sunbong.allmart_api.flyer.repository.FlyerRepository;
@@ -17,6 +19,7 @@ import org.sunbong.allmart_api.flyer.repository.FlyerRepository;
 public class FlyerService {
 
     private final FlyerRepository flyerRepository;
+    private final CustomFileUtil fileUtil;
 
     // 조회
     public FlyerReadDTO readById(Long id) {
@@ -32,6 +35,14 @@ public class FlyerService {
         PageResponseDTO<FlyerListDTO> result = flyerRepository.list(pageRequestDTO);
 
         return result;
+    }
+
+    // 등록
+    public Long register(FlyerAddDTO dto) throws Exception {
+
+
+
+        return null;
     }
 
 

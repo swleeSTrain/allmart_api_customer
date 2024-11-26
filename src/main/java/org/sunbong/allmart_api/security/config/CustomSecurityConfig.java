@@ -40,16 +40,16 @@ public class CustomSecurityConfig {
 
         http.csrf(config -> config.disable());
 
-//        http.addFilterBefore(new JWTCheckFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new JWTCheckFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
         http.cors(cors -> {
             cors.configurationSource(corsConfigurationSource());
         });
-//        http.authorizeHttpRequests(authorize -> authorize
-//                .requestMatchers("/api/v1/member/signUp", "/api/v1/member/makeToken").permitAll()
-//                .requestMatchers("/api/v1/product/**").hasRole("ADMIN")
-//                .anyRequest().authenticated()
-//        );
+        http.authorizeHttpRequests(authorize -> authorize
+                .requestMatchers("/api/v1/member/signUp", "/api/v1/member/makeToken").permitAll()
+                .requestMatchers("/api/v1/**").hasRole("ADMIN") // /api/v1/** 경로는 관리자 권한만 접근 가능
+                .anyRequest().authenticated()
+        );
         return http.build();
     }
 
