@@ -14,6 +14,7 @@ import java.util.Map;
 @Component
 @Log4j2
 public class JWTUtil {
+  // 나중에 바꿔야 함
   private static String key = "1234567890123456789012345678901234567890";
 
   public String createToken(Map<String, Object> valueMap, int min) {

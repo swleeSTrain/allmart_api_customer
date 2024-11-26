@@ -30,7 +30,7 @@ public class JWTCheckFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-                    //검사안할꺼니
+
         log.info("shouldNotFilter");
 
         String uri = request.getRequestURI();
