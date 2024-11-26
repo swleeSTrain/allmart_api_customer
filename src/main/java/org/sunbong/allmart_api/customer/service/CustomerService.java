@@ -1,11 +1,15 @@
 package org.sunbong.allmart_api.customer.service;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.sunbong.allmart_api.customer.domain.Customer;
 import org.sunbong.allmart_api.customer.dto.CustomerRequestDTO;
 import org.sunbong.allmart_api.customer.dto.CustomerUpdateDTO;
@@ -105,6 +109,20 @@ public class CustomerService {
             throw new IllegalArgumentException("이미 등록된 전화번호입니다.");
         }
 
+
+    }
+
+    public String createCookie(Customer customer, HttpServletResponse response) {
+        Cookie cookie = new Cookie("customer", customer.getPhoneNumber());
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false); // Https환경에서만 전송( 개발 중에는 false 가능)
+        cookie.setPath("/"); //모든 경로에서 유효
+        cookie.setMaxAge(60 * 60); // 1시간
+
+        response.addCookie(cookie);
+
+        //응답에 쿠키 추가
+        return "쿠키가 설정되었습니다";
 
     }
 
