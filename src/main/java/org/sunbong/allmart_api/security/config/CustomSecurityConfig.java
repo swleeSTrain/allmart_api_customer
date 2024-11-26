@@ -47,7 +47,7 @@ public class CustomSecurityConfig {
         });
         http.authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/api/v1/member/signUp", "/api/v1/member/makeToken").permitAll()
-                .requestMatchers("/api/v1/**").hasRole("ADMIN") // /api/v1/** 경로는 관리자 권한만 접근 가능
+                .requestMatchers("/api/v1/**").hasRole("MARTADMIN") // /api/v1/** 경로는 관리자 권한만 접근 가능
                 .anyRequest().authenticated()
         );
         return http.build();
