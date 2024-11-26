@@ -39,7 +39,7 @@ public class ProductRepositoryTest {
         assertEquals(1L, productReadDTO.getProductID(), "Product ID should match");
         assertNotNull(productReadDTO.getName(), "Product name should not be null");
         assertNotNull(productReadDTO.getPrice(), "Product price should not be null");
-        assertTrue(productReadDTO.getAttachFiles().size() > 0, "Attach files should be present");
+        assertTrue(productReadDTO.getAttachImages().size() > 0, "Attach files should be present");
     }
 
     @Test

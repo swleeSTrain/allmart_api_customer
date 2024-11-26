@@ -21,7 +21,7 @@ public class ProductReadDTO {
     private BigDecimal price;
     private Long categoryID;
 
-    private List<String> attachFiles;
+    private List<String> attachImages;
 
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;

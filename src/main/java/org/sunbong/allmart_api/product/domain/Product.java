@@ -16,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@ToString(callSuper = true, exclude = {"attachFiles"})
+@ToString(callSuper = true, exclude = {"attachImages"})
 public class Product extends BaseEntity {
 
     @Id
@@ -32,22 +32,29 @@ public class Product extends BaseEntity {
     @Column(precision = 10, scale = 2, nullable = false)
     private BigDecimal price;
 
+    @Builder.Default
+    private boolean delFlag = false;
+
     @ElementCollection
     @CollectionTable(name = "tbl_product_image")
     @BatchSize(size = 50)
     @Builder.Default
-    private List<ProductImage> attachFiles = new ArrayList<>();
+    private List<ProductImage> attachImages = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY) // 즉시 로딩하지 않고 필요할 때만 쿼리에서 실행
     @JoinColumn(name = "categoryid", nullable = false) // 외래 키 설정
     private Category category;
 
-    public void addFile(String filename) {
-        attachFiles.add(new ProductImage(filename, attachFiles.size()));
+    public void addImage(String filename) {
+        attachImages.add(new ProductImage(filename, attachImages.size()));
     }
 
-    public void clearFiles() {
-        attachFiles.clear();
+    public void clearImages() {
+        attachImages.clear();
+    }
+
+    public void softDelete() {
+        this.delFlag = true;
     }
 }
 
