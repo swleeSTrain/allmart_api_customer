@@ -1,8 +1,8 @@
 package org.sunbong.allmart_api.member.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
+import org.sunbong.allmart_api.mart.domain.Mart;
 
 @Entity
 @Builder
@@ -10,7 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
+@ToString(exclude = "mart")
 public class MemberEntity {
 
     @Id
@@ -19,5 +19,10 @@ public class MemberEntity {
     private String pw;
 
     private MemberRole role;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "martID", nullable = false)
+    private Mart mart;
+
 
 }

@@ -5,6 +5,8 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.sunbong.allmart_api.mart.domain.Mart;
+import org.sunbong.allmart_api.mart.repository.MartRepository;
 import org.sunbong.allmart_api.member.domain.MemberEntity;
 import org.sunbong.allmart_api.member.domain.MemberRole;
 import org.sunbong.allmart_api.member.dto.MemberDTO;
@@ -19,7 +21,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Log4j2
 public class MemberService {
+
     private final MemberRepository memberRepository;
+    private final MartRepository martRepository;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -44,10 +48,15 @@ public class MemberService {
     }
 
     public MemberDTO signUp(MemberDTO memberDTO) {
+
+        Mart mart = martRepository.findById(memberDTO.getMartID())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid mart ID"));
+
         MemberEntity memberEntity = MemberEntity.builder()
                 .email(memberDTO.getEmail())
                 .pw(passwordEncoder.encode(memberDTO.getPw()))
                 .role(MemberRole.valueOf(memberDTO.getRole()))
+                .mart(mart)
                 .build();
         memberRepository.save(memberEntity);
         return memberDTO;
