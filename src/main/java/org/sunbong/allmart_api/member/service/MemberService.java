@@ -58,7 +58,9 @@ public class MemberService {
                 .role(MemberRole.valueOf(memberDTO.getRole()))
                 .mart(mart)
                 .build();
+
         memberRepository.save(memberEntity);
+
         return memberDTO;
     }
 
