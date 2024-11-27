@@ -10,6 +10,7 @@ import org.sunbong.allmart_api.mart.repository.MartRepository;
 import org.sunbong.allmart_api.member.domain.MemberEntity;
 import org.sunbong.allmart_api.member.domain.MemberRole;
 import org.sunbong.allmart_api.member.dto.MemberDTO;
+import org.sunbong.allmart_api.member.dto.MemberMartDTO;
 import org.sunbong.allmart_api.member.exception.MemberExceptions;
 import org.sunbong.allmart_api.member.repository.MemberRepository;
 
@@ -26,6 +27,13 @@ public class MemberService {
     private final MartRepository martRepository;
 
     private final PasswordEncoder passwordEncoder;
+
+    public MemberMartDTO martInfo(String email) {
+
+        MemberMartDTO result = memberRepository.findMartInfo(email);
+
+        return result;
+    }
 
     public MemberDTO authenticate(String email, String password) {
 

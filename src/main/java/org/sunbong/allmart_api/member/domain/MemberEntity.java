@@ -24,5 +24,4 @@ public class MemberEntity {
     @JoinColumn(name = "martID", nullable = false)
     private Mart mart;
 
-
 }
