@@ -11,6 +11,7 @@ import org.sunbong.allmart_api.mart.domain.Mart;
 import org.sunbong.allmart_api.mart.dto.MartAddDTO;
 import org.sunbong.allmart_api.mart.dto.MartListDTO;
 import org.sunbong.allmart_api.mart.repository.MartRepository;
+import org.sunbong.allmart_api.product.domain.Product;
 
 import java.util.List;
 
@@ -52,4 +53,19 @@ public class MartService {
 
         return savedMart.getMartID();
     }
+
+    // 소프트 삭제
+    public Long delete(Long id) {
+
+        Mart mart = martRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Product not found with ID: " + id));
+
+        // Product 소프트 딜리트 처리
+        mart.softDelete();
+        martRepository.save(mart);
+
+        return mart.getMartID();
+    }
+
+
 }

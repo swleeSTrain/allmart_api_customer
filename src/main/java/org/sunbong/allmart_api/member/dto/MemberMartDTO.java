@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class MemberMartDTO {
 
+    private Long martID;
     private String martName;
     private String logoURL;
 }

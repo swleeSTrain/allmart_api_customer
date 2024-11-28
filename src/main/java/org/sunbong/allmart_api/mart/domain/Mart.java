@@ -50,4 +50,8 @@ public class Mart extends BaseEntity {
     public void addLogo(String filename) {
         attachLogo.add(new MartLogo(filename, attachLogo.size()));
     }
+
+    public void softDelete() {
+        this.delFlag = true;
+    }
 }

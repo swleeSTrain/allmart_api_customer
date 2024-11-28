@@ -41,17 +41,17 @@ public class CustomSecurityConfig implements WebMvcConfigurer {
 
         http.csrf(config -> config.disable());
 
-        http.addFilterBefore(new JWTCheckFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+//        http.addFilterBefore(new JWTCheckFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
-        http.authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/uploads/**").permitAll() // /uploads/** 경로 허용
-                .requestMatchers("/api/v1/member/signUp", "/api/v1/member/makeToken",
-                        "api/v1/mart/add", "api/v1/mart/list").permitAll()
-                .requestMatchers("/api/v1/**").hasRole("MARTADMIN") // /api/v1/** 경로는 관리자 권한만 접근 가능
-                .anyRequest().authenticated()
-        );
+//        http.authorizeHttpRequests(authorize -> authorize
+//                .requestMatchers("/uploads/**").permitAll() // /uploads/** 경로 허용
+//                .requestMatchers("/api/v1/member/signUp", "/api/v1/member/makeToken",
+//                        "api/v1/mart/add", "api/v1/mart/list").permitAll()
+//                .requestMatchers("/api/v1/**").hasRole("MARTADMIN") // /api/v1/** 경로는 관리자 권한만 접근 가능
+//                .anyRequest().authenticated()
+//        );
 
         return http.build();
     }

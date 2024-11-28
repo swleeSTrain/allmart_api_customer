@@ -38,7 +38,7 @@ public class MemberSearchImpl extends QuerydslRepositorySupport implements Membe
                 .leftJoin(mart.attachLogo, martLogo)
                 .where(member.email.eq(email)
                         .and(martLogo.ord.eq(0)))
-                .select(mart.martName, martLogo.logoURL);
+                .select(mart.martName, mart.martID,martLogo.logoURL);
 
         Tuple result = query.fetchOne();
 
@@ -48,11 +48,11 @@ public class MemberSearchImpl extends QuerydslRepositorySupport implements Membe
 
         // DTO 생성 및 반환
         return MemberMartDTO.builder()
+                .martID(result.get(mart.martID))
                 .martName(result.get(mart.martName))
                 .logoURL(result.get(martLogo.logoURL))
                 .build();
     }
-
 
 
 }
