@@ -33,5 +33,6 @@ public class Address extends BaseEntity {
     @JoinColumn(name = "customerID", nullable = false)
     private Customer customer; // 단방향 관계 설정
 
+
 }
 
