@@ -52,8 +52,6 @@ public class ProductService {
     // 등록
     public Long register(ProductAddDTO dto) throws Exception {
 
-        // 중복 체크
-        validateDuplicate(dto.getName());
 
         // 카테고리 ID로 카테고리 찾기
         Category category = categoryRepository.findById(dto.getCategoryID())
@@ -165,8 +163,10 @@ public class ProductService {
     // 중복 체크
     private void validateDuplicate(String name) throws Exception {
 
-        // 409 상태 코드 반환
-        throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 존재하는 상품입니다: " + name);
+        if (productRepository.findByName(name).isPresent()) {
+            // 409 상태 코드 반환
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 존재하는 상품입니다: " + name);
+        }
     }
 
 
