@@ -2,7 +2,6 @@ package org.sunbong.allmart_api.order.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.sunbong.allmart_api.common.dto.PageRequestDTO;
@@ -19,7 +18,6 @@ import org.sunbong.allmart_api.order.dto.OrderListDTO;
 import org.sunbong.allmart_api.order.exception.OrderNotFoundException;
 import org.sunbong.allmart_api.order.repository.OrderItemJpaRepository;
 import org.sunbong.allmart_api.order.repository.OrderJpaRepository;
-import org.sunbong.allmart_api.order.repository.search.OrderSearch;
 import org.sunbong.allmart_api.product.domain.Product;
 import org.sunbong.allmart_api.product.exception.ProductNotFoundException;
 import org.sunbong.allmart_api.product.repository.ProductRepository;
@@ -123,6 +121,7 @@ public class OrderServiceImpl implements OrderService {
                 .customerId(userId)
                 .status(OrderStatus.PENDING)
                 .totalAmount(totalAmount)
+                .delivery(null)
                 .build();
 
         // OrderEntity 저장
