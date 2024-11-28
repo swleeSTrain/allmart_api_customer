@@ -15,6 +15,7 @@ import org.sunbong.allmart_api.order.repository.OrderJpaRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,33 +37,75 @@ public class DeliveryService {
         Map<String, List<OrderEntity>> ordersGroupedByCustomer = completedOrders.stream()
                 .collect(Collectors.groupingBy(OrderEntity::getCustomerId));
 
-        // 고객별로 배달 생성 및 주문 연결
         return ordersGroupedByCustomer.entrySet().stream()
                 .map(entry -> {
                     String customerId = entry.getKey();
                     List<OrderEntity> orders = entry.getValue();
 
-                    // 배달 생성
-                    DeliveryEntity delivery = DeliveryEntity.builder()
-                            .deliveryTime(LocalDateTime.now())
-                            .status(DeliveryStatus.PENDING)
-                            .build();
-                    deliveryRepository.save(delivery);
+                    // 고객 ID로 기존 PENDING 상태 배달 찾기
+                    Optional<OrderEntity> anyOrder = orders.stream().findFirst();
+                    if (anyOrder.isPresent() && anyOrder.get().getDelivery() != null) {
+                        DeliveryEntity existingDelivery = anyOrder.get().getDelivery();
 
-                    // 주문에 배달 연결
-                    orders.forEach(order -> {
-                        order.assignDelivery(delivery);
-                        orderRepository.save(order); // 주문 업데이트
-                    });
+                        // 기존 배달에 주문 연결
+                        orders.forEach(order -> {
+                            order.assignDelivery(existingDelivery);
+                            orderRepository.save(order);
+                        });
 
-                    // DeliveryEntity -> DeliveryDTO 변환
-                    return DeliveryDTO.builder()
-                            .deliveryId(delivery.getDeliveryID())
-                            .deliveryTime(delivery.getDeliveryTime())
-                            .status(delivery.getStatus().name())
-                            .build();
+                        // 기존 배달 중 사용되지 않는 배달 삭제
+                        deleteUnusedDeliveries(existingDelivery.getDeliveryID());
+
+                        return DeliveryDTO.builder()
+                                .deliveryId(existingDelivery.getDeliveryID())
+                                .deliveryTime(existingDelivery.getDeliveryTime())
+                                .status(existingDelivery.getStatus().name())
+                                .customerId(customerId)
+                                .build();
+                    } else {
+                        // 새로운 배달 생성
+                        DeliveryEntity newDelivery = DeliveryEntity.builder()
+                                .deliveryTime(LocalDateTime.now())
+                                .status(DeliveryStatus.PENDING)
+                                .build();
+                        deliveryRepository.save(newDelivery);
+
+                        // 새로운 배달에 주문 연결
+                        orders.forEach(order -> {
+                            order.assignDelivery(newDelivery);
+                            orderRepository.save(order);
+                        });
+
+                        // 기존 배달 중 사용되지 않는 배달 삭제
+                        deleteUnusedDeliveries(newDelivery.getDeliveryID());
+
+                        return DeliveryDTO.builder()
+                                .deliveryId(newDelivery.getDeliveryID())
+                                .deliveryTime(newDelivery.getDeliveryTime())
+                                .status(newDelivery.getStatus().name())
+                                .customerId(customerId)
+                                .build();
+                    }
                 })
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * 기존 배달 중 사용되지 않는 배달 삭제
+     */
+    private void deleteUnusedDeliveries(Long currentDeliveryId) {
+        List<DeliveryEntity> allDeliveries = deliveryRepository.findByStatus(DeliveryStatus.PENDING);
+
+        for (DeliveryEntity delivery : allDeliveries) {
+            if (!delivery.getDeliveryID().equals(currentDeliveryId)) {
+                // 배달에 연결된 주문 확인
+                List<OrderEntity> linkedOrders = orderRepository.findByDeliveryDeliveryID(delivery.getDeliveryID());
+                if (linkedOrders.isEmpty()) {
+                    // 연결된 주문이 없다면 배달 삭제
+                    deliveryRepository.delete(delivery);
+                }
+            }
+        }
     }
 
     /**

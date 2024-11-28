@@ -38,14 +38,13 @@ public class OrderEntity extends BaseEntity {
     private int notification;
 
     @ManyToOne
-    @JoinColumn(name = "deliveryID", nullable = false)
+    @JoinColumn(name = "deliveryID", nullable = true)
     private DeliveryEntity delivery;
 
 
     public OrderEntity changeStatus(OrderStatus newStatus) {
-        return this.toBuilder()
-                .status(newStatus)
-                .build();
+        this.status = newStatus; // 현재 객체의 상태만 변경
+        return this; // 새 객체를 생성하지 않고 자기 자신 반환
     }
 
     // 총 금액 업데이트 메서드
@@ -53,10 +52,7 @@ public class OrderEntity extends BaseEntity {
         this.totalAmount = amount;
     }
 
-    // 배달 연결 메서드
-    public OrderEntity assignDelivery(DeliveryEntity delivery) {
-        return this.toBuilder()
-                .delivery(delivery)
-                .build();
+    public void assignDelivery(DeliveryEntity delivery) {
+        this.delivery = delivery;
     }
 }

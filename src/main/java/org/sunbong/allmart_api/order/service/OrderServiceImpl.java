@@ -1,6 +1,7 @@
 package org.sunbong.allmart_api.order.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,12 +25,14 @@ import org.sunbong.allmart_api.product.exception.ProductNotFoundException;
 import org.sunbong.allmart_api.product.repository.ProductRepository;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Log4j2
 public class OrderServiceImpl implements OrderService {
 
     private final OrderJpaRepository orderRepository;
@@ -78,11 +81,27 @@ public class OrderServiceImpl implements OrderService {
         OrderEntity order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderNotFoundException(orderId));
 
+        // 단계별 로깅
+        log.info("Order Retrieved: {}", order);
+        log.info("Order CreatedDate Before Check: {}", order.getCreatedDate());
+
+        if (order.getCreatedDate() == null) {
+            throw new IllegalStateException("Order createdDate is null");
+        }
+
+
         OrderEntity updatedOrder = order.changeStatus(newStatus);
         orderRepository.save(updatedOrder);
 
+        log.info("Order CreatedDate After Save: {}", updatedOrder.getCreatedDate());
+
         if (newStatus == OrderStatus.COMPLETED) {
-            deliveryService.processOrdersForDelivery(order.getCreatedDate().minusHours(2), order.getCreatedDate());
+            LocalDateTime startTime = order.getCreatedDate().minusHours(2);
+            LocalDateTime endTime = order.getCreatedDate();
+
+            log.info("StartTime: {}, EndTime: {}", startTime, endTime);
+
+            deliveryService.processOrdersForDelivery(startTime, endTime);
         }
     }
 
