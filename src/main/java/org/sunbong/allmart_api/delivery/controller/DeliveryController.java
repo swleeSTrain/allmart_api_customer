@@ -14,6 +14,7 @@ import org.sunbong.allmart_api.order.dto.OrderListDTO;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/delivery")
@@ -38,6 +39,18 @@ public class DeliveryController {
     public ResponseEntity<DeliveryDTO> changeDeliveryStatus(@PathVariable Long deliveryId,
                                                             @RequestParam String status) {
         return ResponseEntity.ok(deliveryService.changeDeliveryStatus(deliveryId, status));
+    }
+
+    //대시보드 숫자
+    @GetMapping("/status-count")
+    public ResponseEntity<Map<String, Long>> getDeliveryStatusCount() {
+        return ResponseEntity.ok(deliveryService
+                .getDeliveryStatusCount());
+    }
+
+    @GetMapping("/orders-by-status")
+    public ResponseEntity<List<OrderDTO>> getOrdersByStatus(@RequestParam String status) {
+        return ResponseEntity.ok(deliveryService.getOrdersByStatus(status));
     }
 
 }

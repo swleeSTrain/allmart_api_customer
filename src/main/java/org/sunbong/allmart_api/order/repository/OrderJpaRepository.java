@@ -3,6 +3,7 @@ package org.sunbong.allmart_api.order.repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.sunbong.allmart_api.delivery.domain.DeliveryStatus;
 import org.sunbong.allmart_api.order.domain.OrderEntity;
 import org.sunbong.allmart_api.order.domain.OrderStatus;
 import org.sunbong.allmart_api.order.repository.search.OrderSearch;
@@ -30,4 +31,6 @@ public interface OrderJpaRepository extends JpaRepository<OrderEntity, Long>, Or
     List<OrderEntity> findByCustomerIdAndStatus(
             String customerId,
             OrderStatus status);
+
+    List<OrderEntity> findByDeliveryStatus(DeliveryStatus deliveryStatus);
 }

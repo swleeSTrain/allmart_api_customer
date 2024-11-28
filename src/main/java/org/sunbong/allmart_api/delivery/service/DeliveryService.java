@@ -147,6 +147,40 @@ public class DeliveryService {
                 .status(delivery.getStatus().name())
                 .build();
     }
+
+    @Transactional(readOnly = true)
+    public Map<String, Long> getDeliveryStatusCount() {
+        // 배달 상태별로 개수를 계산
+        Map<DeliveryStatus, Long> statusCounts = deliveryRepository.findAll().stream()
+                .collect(Collectors.groupingBy(DeliveryEntity::getStatus, Collectors.counting()));
+
+        // 상태를 문자열로 변환하여 반환
+        return statusCounts.entrySet().stream()
+                .collect(Collectors.toMap(
+                        entry -> entry.getKey().name(), // DeliveryStatus -> String
+                        Map.Entry::getValue // 개수
+                ));
+    }
+
+    @Transactional(readOnly = true)
+    public List<OrderDTO> getOrdersByStatus(String status) {
+        try {
+            DeliveryStatus deliveryStatus = DeliveryStatus.valueOf(status.toUpperCase());
+            List<OrderEntity> orders = orderRepository.findByDeliveryStatus(deliveryStatus);
+
+            return orders.stream()
+                    .map(order -> OrderDTO.builder()
+                            .orderId(order.getOrderID())
+                            .customerId(order.getCustomerId())
+                            .totalAmount(order.getTotalAmount())
+                            .status(order.getStatus().name())
+                            .orderTime(order.getCreatedDate())
+                            .build())
+                    .collect(Collectors.toList());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid status: " + status);
+        }
+    }
 }
 
 
