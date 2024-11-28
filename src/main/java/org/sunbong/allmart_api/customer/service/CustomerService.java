@@ -11,11 +11,15 @@ import org.sunbong.allmart_api.address.dto.AddressDTO;
 import org.sunbong.allmart_api.address.repository.AddressRepository;
 import org.sunbong.allmart_api.address.service.AddressService;
 import org.sunbong.allmart_api.customer.domain.Customer;
+import org.sunbong.allmart_api.customer.domain.CustomerMart;
 import org.sunbong.allmart_api.customer.dto.CustomerListDTO;
 import org.sunbong.allmart_api.customer.dto.CustomerRegisterDTO;
 import org.sunbong.allmart_api.customer.dto.CustomerRequestDTO;
 import org.sunbong.allmart_api.customer.dto.CustomerUpdateDTO;
+import org.sunbong.allmart_api.customer.repository.CustomerMartRepository;
 import org.sunbong.allmart_api.customer.repository.CustomerRepository;
+import org.sunbong.allmart_api.mart.domain.Mart;
+import org.sunbong.allmart_api.mart.repository.MartRepository;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -31,6 +35,8 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
     private final AddressService addressService;
     private final AddressRepository addressRepository;
+    private final MartRepository martRepository;
+    private final CustomerMartRepository customerMartRepository;
 
     // -----------------------------------------------------------------
     // 조회
@@ -89,7 +95,7 @@ public class CustomerService {
         return Optional.of(savedCustomer);
     }
 
-    public Customer registerCustomerWithAddress(CustomerRegisterDTO customerRegisterDTO) {
+    public Customer registerCustomer(CustomerRegisterDTO customerRegisterDTO) {
         // 1. Customer 생성 및 저장
         Customer customer = Customer.builder()
                 .name(customerRegisterDTO.getName())
@@ -106,14 +112,23 @@ public class CustomerService {
                 .detailAddress(customerRegisterDTO.getDetailAddress())
                 .fullAddress(customerRegisterDTO.getRoadAddress() + " " + customerRegisterDTO.getDetailAddress())
                 .build();
-
         addressService.saveAddress(addressDTO, savedCustomer);
 
         log.info("Address saved for Customer: {}", savedCustomer.getCustomerID());
 
-        // 3. 저장된 Customer 반환
+        Mart mart = martRepository.findById(customerRegisterDTO.getMartID())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid Mart ID: " + customerRegisterDTO.getMartID()));
+
+        CustomerMart customerMart = CustomerMart.builder()
+                .mart(mart)
+                .customer(savedCustomer)
+                .build();
+        customerMartRepository.save(customerMart);
+
+        // 4. 저장된 Customer 반환
         return savedCustomer;
     }
+
 
     // -----------------------------------------------------------------
     // 삭제
