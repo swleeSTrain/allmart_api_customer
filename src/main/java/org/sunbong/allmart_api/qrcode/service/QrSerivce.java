@@ -55,7 +55,7 @@ public class QrSerivce {
             LocalDateTime expireTime;
             String qrCodeUrl;
             String encodedPhoneNumber= URLEncoder.encode(qrRequestDto.getPhoneNumber(), StandardCharsets.UTF_8);
-            String encodedCustomerId= URLEncoder.encode(qrRequestDto.getCustomerID().toString(), StandardCharsets.UTF_8);
+            String encodedCustomerId= URLEncoder.encode(qrRequestDto.getMartID().toString(), StandardCharsets.UTF_8);
 
 
             switch (qrCodeType){

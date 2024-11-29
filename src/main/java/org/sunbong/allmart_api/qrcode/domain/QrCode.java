@@ -4,6 +4,7 @@ package org.sunbong.allmart_api.qrcode.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import org.sunbong.allmart_api.customer.domain.Customer;
+import org.sunbong.allmart_api.mart.domain.Mart;
 
 import java.time.LocalDateTime;
 
@@ -44,7 +45,8 @@ public class QrCode {
     @JoinColumn(name = "customerID", referencedColumnName = "customerID", nullable = true)
     private Customer customer;
 
-
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "martID", referencedColumnName = "martID", nullable = true)
+    private Mart mart;
 
 }
