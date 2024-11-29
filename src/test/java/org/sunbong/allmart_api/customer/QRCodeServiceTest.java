@@ -9,7 +9,7 @@ import org.sunbong.allmart_api.customer.domain.Customer;
 import org.sunbong.allmart_api.customer.dto.CustomerRequestDTO;
 import org.sunbong.allmart_api.customer.repository.CustomerRepository;
 import org.sunbong.allmart_api.customer.service.CustomerService;
-import org.sunbong.allmart_api.qrcode.service.QrSerivce;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDateTime;

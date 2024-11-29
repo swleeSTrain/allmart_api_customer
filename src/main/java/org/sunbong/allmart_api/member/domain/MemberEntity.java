@@ -20,6 +20,8 @@ public class MemberEntity {
 
     private MemberRole role;
 
+    private String phoneNumber;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "martID", nullable = false)
     private Mart mart;
