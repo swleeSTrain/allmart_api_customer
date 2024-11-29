@@ -192,8 +192,6 @@ public class CustomerController {
     // 기존 전화번호 기반 가등록 로직
     @PostMapping("/signUp/phoneNumber/{phoneNumber}")
     public ResponseEntity<Void> phoneNumberSignUp(@PathVariable("phoneNumber") String phoneNumber) {
-        //
-    public ResponseEntity<Void> phoneNumberSignUp(@PathVariable("phoneNumber") String phoneNumber) {
         CustomerRequestDTO customerRequestDTO = CustomerRequestDTO.builder()
                 .phoneNumber(phoneNumber)
                 .loginType(CustomerLoginType.PHONE)
