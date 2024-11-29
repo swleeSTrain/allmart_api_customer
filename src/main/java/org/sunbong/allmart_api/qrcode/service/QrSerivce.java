@@ -135,9 +135,3 @@ public class QrSerivce {
     }
 
 
-
-    private boolean isExpiredQRCode(LocalDateTime date){
-        return LocalDateTime.now().isAfter(date.plusMinutes(QR_CODE_SIGNUP_EXPIRED) );
-    }
-
-}

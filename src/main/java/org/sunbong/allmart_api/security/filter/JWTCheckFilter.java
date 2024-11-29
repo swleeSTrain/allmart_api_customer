@@ -34,6 +34,16 @@ public class JWTCheckFilter extends OncePerRequestFilter {
         log.info("shouldNotFilter");
 
         String uri = request.getRequestURI();
+
+        // AntPathMatcher로 경로 매칭
+        if (uri.startsWith("/uploads/")) {
+            return true;
+        }
+
+        if (uri.startsWith("/api/v1/mart")) {
+            return true;
+        }
+
         log.info("----------------------------------");
         if(uri.equals("/api/v1/member/makeToken") ||
                 uri.equals("/api/v1/member/refreshToken") ||
@@ -44,6 +54,8 @@ public class JWTCheckFilter extends OncePerRequestFilter {
 
                 // 회원가입 엔드포인트 추가
 
+                uri.equals("/api/v1/member/signUp")) // 회원가입 엔드포인트 추가
+        {
             return true;
         }
 
