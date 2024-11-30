@@ -13,9 +13,7 @@ import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport
 import org.springframework.stereotype.Repository;
 import org.sunbong.allmart_api.common.dto.PageRequestDTO;
 import org.sunbong.allmart_api.common.dto.PageResponseDTO;
-import org.sunbong.allmart_api.customer.domain.Customer;
-import org.sunbong.allmart_api.customer.domain.CustomerLoginType;
-import org.sunbong.allmart_api.customer.domain.QCustomer;
+import org.sunbong.allmart_api.customer.domain.*;
 import org.sunbong.allmart_api.customer.dto.CustomerListDTO;
 import org.sunbong.allmart_api.customer.dto.CustomerResponseDTO;
 import org.sunbong.allmart_api.qrcode.domain.QQrCode;
@@ -24,16 +22,53 @@ import org.sunbong.allmart_api.qrcode.domain.QrCode;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
 @Log4j2
-
 public class CustomerSearchImpl extends QuerydslRepositorySupport  implements CustomerSearch {
 
     public CustomerSearchImpl() {
         super(Customer.class);
 
+    }
+
+    @Override
+    public Optional<CustomerResponseDTO> findCustomerWithMart(String userData, CustomerLoginType loginType) {
+        QCustomer customer = QCustomer.customer;
+        QCustomerMart customerMart = QCustomerMart.customerMart;
+
+        // CustomerMart를 기준으로 고객 정보와 관련된 Mart를 가져오는 쿼리
+        JPQLQuery<CustomerMart> query = from(customerMart)
+                .leftJoin(customerMart.customer, customer)
+                .where(
+                        loginType == CustomerLoginType.PHONE
+                                ? customer.phoneNumber.eq(userData)
+                                : customer.email.eq(userData)
+                );
+
+        CustomerMart result = query.fetchOne();
+
+        if (result == null) {
+            return Optional.empty();
+        }
+
+        // 고객 정보 추출 (CustomerMart에서 직접 연관된 Customer 정보를 가져옴)
+        Customer customerResult = result.getCustomer();
+        Long martID = result.getMart().getMartID(); // CustomerMart에서 직접 마트 정보 추출
+
+        // DTO 변환
+        CustomerResponseDTO responseDTO = CustomerResponseDTO.builder()
+                .customerID(customerResult.getCustomerID()) // Customer에서 ID만 가져옴
+                .name(customerResult.getName())
+                .phoneNumber(customerResult.getPhoneNumber())
+                .email(customerResult.getEmail())
+                .loyaltyPoint(customerResult.getLoyaltyPoints())
+                .martID(martID)  // 해당 마트의 ID를 가져옴
+                .build();
+
+        return Optional.of(responseDTO);
     }
 
 
