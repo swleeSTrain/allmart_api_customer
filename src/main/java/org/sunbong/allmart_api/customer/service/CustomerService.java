@@ -96,7 +96,7 @@ public class CustomerService {
                 .name(customerDTO.getName())
                 .phoneNumber(customerDTO.getPhoneNumber())
                 .martID(customerDTO.getMartID()) // 마트 ID 추가
-                .customerId(customerDTO.getCustomerID()) // 고객 ID 추가
+                .customerID(customerDTO.getCustomerID()) // 고객 ID 추가
                 .build();
 
         return tokenResponseDTO;
