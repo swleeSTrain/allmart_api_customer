@@ -48,6 +48,8 @@ public class CustomerService {
     private final MartRepository martRepository;
     private final CustomerMartRepository customerMartRepository;
 
+    // 구조를 똑같이 가줘야 함 다른 것들은 Repository로 받아옴
+    // 이것 때문에 꼬이는 문제 발생 전부 Repository로 통일해야함
 //    private final CustomerSearch customerSearch;
 
     private final JWTUtil jwtUtil;
@@ -258,7 +260,7 @@ public class CustomerService {
 
     }
 
-//
+    // 여기서부터 주석단 부분은 customerSearch를 사용해서 꼬여서 주석처리함
 //    public CustomerResponseDTO authenticate(String userData, CustomerLoginType loginType) {
 //
 //        CustomerResponseDTO findedCustomerDTO = customerSearch.findByPhoneNumberOrEmail(userData, loginType);

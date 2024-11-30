@@ -58,42 +58,6 @@ public class CustomerController {
         return ResponseEntity.ok(tokenResponseDTO);
     }
 
-//    @PostMapping("/makeToken")
-//    public ResponseEntity<CustomerTokenResponseDTO> makeToken(@RequestBody @Validated CustomerTokenRequestDTO tokenRequestDTO) {
-//
-//        log.info("Making token");
-//        log.info("------------------------");
-//
-//        String userData = (tokenRequestDTO.getLoginType() == CustomerLoginType.PHONE ? tokenRequestDTO.getPhoneNumber() : tokenRequestDTO.getEmail());
-//        CustomerResponseDTO customerDTO = customerService.authenticate(
-//                userData, tokenRequestDTO.getLoginType());
-//
-//        log.info(customerDTO);
-//
-//        Map<String, Object> claimMap;
-//
-//        if (tokenRequestDTO.getLoginType() == CustomerLoginType.SOCIAL) {
-//            claimMap = Map.of(
-//                    "email", customerDTO.getEmail());
-//
-//        } else {
-//            claimMap = Map.of(
-//                    "phoneNumber", customerDTO.getPhoneNumber());
-//        }
-//
-//        String accesToken = jWTUtil.createToken(claimMap, accessTime);
-//        String refreshToken = jWTUtil.createToken(claimMap, refreshTime);
-//
-//        CustomerTokenResponseDTO tokenResponseDTO = CustomerTokenResponseDTO.builder()
-//                .accessToken(accesToken)
-//                .refreshToken(refreshToken)
-//                .email(customerDTO.getEmail())
-//                .phoneNumber(customerDTO.getPhoneNumber())
-//                .build();
-//
-//        return ResponseEntity.ok(tokenResponseDTO);
-//    }
-
     @PostMapping(value = "refreshToken",
             consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
@@ -216,6 +180,46 @@ public class CustomerController {
         CustomerTokenResponseDTO tokenResponse = customerService.signIn(signInRequest, loginType);
         return ResponseEntity.ok(tokenResponse);
     }
+
+
+    // 여기도 customerSearch랑 엮인 부분 있어서 주석 처리 함
+
+    //    @PostMapping("/makeToken")
+//    public ResponseEntity<CustomerTokenResponseDTO> makeToken(@RequestBody @Validated CustomerTokenRequestDTO tokenRequestDTO) {
+//
+//        log.info("Making token");
+//        log.info("------------------------");
+//
+//        String userData = (tokenRequestDTO.getLoginType() == CustomerLoginType.PHONE ? tokenRequestDTO.getPhoneNumber() : tokenRequestDTO.getEmail());
+//        CustomerResponseDTO customerDTO = customerService.authenticate(
+//                userData, tokenRequestDTO.getLoginType());
+//
+//        log.info(customerDTO);
+//
+//        Map<String, Object> claimMap;
+//
+//        if (tokenRequestDTO.getLoginType() == CustomerLoginType.SOCIAL) {
+//            claimMap = Map.of(
+//                    "email", customerDTO.getEmail());
+//
+//        } else {
+//            claimMap = Map.of(
+//                    "phoneNumber", customerDTO.getPhoneNumber());
+//        }
+//
+//        String accesToken = jWTUtil.createToken(claimMap, accessTime);
+//        String refreshToken = jWTUtil.createToken(claimMap, refreshTime);
+//
+//        CustomerTokenResponseDTO tokenResponseDTO = CustomerTokenResponseDTO.builder()
+//                .accessToken(accesToken)
+//                .refreshToken(refreshToken)
+//                .email(customerDTO.getEmail())
+//                .phoneNumber(customerDTO.getPhoneNumber())
+//                .build();
+//
+//        return ResponseEntity.ok(tokenResponseDTO);
+//    }
+
 
 //    @PostMapping("/verifyToken")
 //    public ResponseEntity<CustomerResponseDTO> verifyToken(@RequestHeader("Authorization") String token) {
