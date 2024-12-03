@@ -9,7 +9,8 @@ import org.sunbong.allmart_api.customer.domain.Customer;
 import org.sunbong.allmart_api.customer.dto.CustomerRequestDTO;
 import org.sunbong.allmart_api.customer.repository.CustomerRepository;
 import org.sunbong.allmart_api.customer.service.CustomerService;
-import org.sunbong.allmart_api.qrcode.service.QrSerivce;
+import org.sunbong.allmart_api.qrcode.service.QrService;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDateTime;
@@ -19,7 +20,7 @@ import java.util.Optional;
 class QRCodeServiceTest {
 
     @Autowired
-    private QrSerivce qrSerivce;
+    private QrService qrSerivce;
 
     @Autowired
     private CustomerService customerService;

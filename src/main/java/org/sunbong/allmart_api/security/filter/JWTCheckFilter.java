@@ -47,7 +47,9 @@ public class JWTCheckFilter extends OncePerRequestFilter {
         log.info("----------------------------------");
         if(uri.equals("/api/v1/member/makeToken") ||
                 uri.equals("/api/v1/member/refreshToken") ||
-                uri.equals("/api/v1/member/signUp")) // 회원가입 엔드포인트 추가
+                uri.equals("/api/v1/member/signUp")||
+                uri.startsWith("/oauth2")||
+            uri.startsWith("/customer")) // 회원가입 엔드포인트 추가
         {
             return true;
         }
