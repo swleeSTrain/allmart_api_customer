@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -20,5 +19,7 @@ public class MartAddDTO {
     private String template;
     private String address;
     private String certificate;
+    private Double lat;
+    private Double lng;
     private List<MultipartFile> files;
 }

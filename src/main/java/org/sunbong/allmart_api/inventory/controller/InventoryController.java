@@ -2,15 +2,13 @@ package org.sunbong.allmart_api.inventory.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.sunbong.allmart_api.common.dto.PageRequestDTO;
 import org.sunbong.allmart_api.common.dto.PageResponseDTO;
-import org.sunbong.allmart_api.inventory.dto.InventoryDTO;
 import org.sunbong.allmart_api.inventory.dto.InventoryListDTO;
 import org.sunbong.allmart_api.inventory.service.InventoryService;
-
-import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/inventories")

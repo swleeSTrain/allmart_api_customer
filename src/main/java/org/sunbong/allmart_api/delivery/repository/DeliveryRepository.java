@@ -1,11 +1,8 @@
 package org.sunbong.allmart_api.delivery.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.sunbong.allmart_api.delivery.domain.DeliveryEntity;
 import org.sunbong.allmart_api.delivery.domain.DeliveryStatus;
-import org.sunbong.allmart_api.order.domain.OrderStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
