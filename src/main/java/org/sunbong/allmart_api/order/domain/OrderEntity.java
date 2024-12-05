@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.sunbong.allmart_api.common.domain.BaseEntity;
 import org.sunbong.allmart_api.delivery.domain.DeliveryEntity;
-import org.sunbong.allmart_api.order.exception.OrderStatusChangeException;
 
 import java.math.BigDecimal;
 

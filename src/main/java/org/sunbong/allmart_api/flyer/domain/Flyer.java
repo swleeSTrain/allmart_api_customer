@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.BatchSize;
 import org.sunbong.allmart_api.common.domain.BaseEntity;
-import org.sunbong.allmart_api.product.domain.ProductImage;
 
 import java.util.ArrayList;
 import java.util.HashSet;

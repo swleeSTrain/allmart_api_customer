@@ -1,7 +1,10 @@
 package org.sunbong.allmart_api.address.domain;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.sunbong.allmart_api.common.domain.BaseEntity;
 import org.sunbong.allmart_api.customer.domain.Customer;
 

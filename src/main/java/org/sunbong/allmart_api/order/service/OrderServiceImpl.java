@@ -6,10 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.sunbong.allmart_api.common.dto.PageRequestDTO;
 import org.sunbong.allmart_api.common.dto.PageResponseDTO;
-import org.sunbong.allmart_api.delivery.repository.DeliveryRepository;
 import org.sunbong.allmart_api.delivery.service.DeliveryService;
 import org.sunbong.allmart_api.order.domain.OrderEntity;
-
 import org.sunbong.allmart_api.order.domain.OrderItem;
 import org.sunbong.allmart_api.order.domain.OrderStatus;
 import org.sunbong.allmart_api.order.dto.OrderDTO;

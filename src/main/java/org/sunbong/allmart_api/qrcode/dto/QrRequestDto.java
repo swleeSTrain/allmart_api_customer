@@ -19,4 +19,6 @@ public class QrRequestDto {
 
     private Long customerID;
 
+    private Long martID;
+
 }

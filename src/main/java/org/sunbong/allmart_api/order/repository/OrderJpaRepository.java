@@ -1,7 +1,5 @@
 package org.sunbong.allmart_api.order.repository;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.sunbong.allmart_api.delivery.domain.DeliveryStatus;
 import org.sunbong.allmart_api.order.domain.OrderEntity;

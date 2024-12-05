@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.BatchSize;
 import org.sunbong.allmart_api.common.domain.BaseEntity;
-import org.sunbong.allmart_api.product.domain.ProductImage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +36,12 @@ public class Mart extends BaseEntity {
 
     @Column(name = "certificate", length = 255, nullable = false)
     private String certificate; // 사업자등록증
+
+    @Column(name = "lat", nullable = false)
+    private double lat; // 위도
+
+    @Column(name = "lng", nullable = false)
+    private double lng; // 경도
 
     @Builder.Default
     private boolean delFlag = false;

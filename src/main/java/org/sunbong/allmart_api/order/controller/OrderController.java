@@ -12,11 +12,9 @@ import org.sunbong.allmart_api.common.dto.PageResponseDTO;
 import org.sunbong.allmart_api.order.domain.OrderStatus;
 import org.sunbong.allmart_api.order.dto.NaverChatbotOrderDTO;
 import org.sunbong.allmart_api.order.dto.OrderDTO;
-import org.sunbong.allmart_api.order.dto.OrderItemDTO;
 import org.sunbong.allmart_api.order.dto.OrderListDTO;
 import org.sunbong.allmart_api.order.service.OrderService;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
