@@ -3,7 +3,7 @@ spring:
     name: allmart_api
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-#    url: jdbc:mariadb://localhost:13306/test
+#    url: jdbc:mariadb://localhost:13306/vgdb
     url: jdbc:mariadb://10.10.10.54:13306/vgdb
     username: vgdbuser
     password: vgdbuser
@@ -35,6 +35,9 @@ org:
     alwaysNew: true
     upload:
       path: C:/upload
+
+server:
+  port: 8085
 
 logging:
   level:

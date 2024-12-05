@@ -5,14 +5,8 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.sunbong.allmart_api.common.dto.PageRequestDTO;
 import org.sunbong.allmart_api.common.dto.PageResponseDTO;
-import org.sunbong.allmart_api.inventory.domain.Inventory;
-import org.sunbong.allmart_api.inventory.dto.InventoryDTO;
 import org.sunbong.allmart_api.inventory.dto.InventoryListDTO;
 import org.sunbong.allmart_api.inventory.repository.InventoryRepository;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
