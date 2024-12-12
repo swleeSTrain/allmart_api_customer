@@ -72,7 +72,6 @@
                     .userInfoEndpoint(userInfo  -> userInfo
                             .userService(customOAuth2UserService) // 사용자 정보 처리 서비스
 
-
                     ));
 
 
