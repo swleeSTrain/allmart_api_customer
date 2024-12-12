@@ -2,21 +2,19 @@ package org.sunbong.allmart_api.social.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.sunbong.allmart_api.customer.domain.Customer;
 import org.sunbong.allmart_api.customer.domain.CustomerLoginType;
 import org.sunbong.allmart_api.customer.repository.CustomerRepository;
 import org.sunbong.allmart_api.customer.service.CustomerService;
-import org.sunbong.allmart_api.social.dto.SocialCustomerDTO;
 import org.sunbong.allmart_api.security.util.JWTUtil;
-
+import org.sunbong.allmart_api.social.dto.SocialCustomerDTO;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Service
@@ -45,9 +43,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             principalName = "defaultPrincipal"; // 기본값 설정
         }
 
-        java.util.Map<String, Object>  paramMap = oAuth2User.getAttributes();
 
-        paramMap.forEach((k,v) -> {
+        Map<String, Object>  attributes = oAuth2User.getAttributes();
+
+        attributes.forEach((k,v) -> {
             log.info("key: " + k + " value: " + v);
         });
 
@@ -58,10 +57,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         log.info("===========================");
         log.info(serviceName);
 
-        LinkedHashMap accountMap = (LinkedHashMap) paramMap.get("kakao_account");
+        Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
+        //LinkedHashMap kakaoAccount = (LinkedHashMap) attributes.get("kakao_account");
 
-        String email = (String) accountMap.get("email");
-        String name = (String) accountMap.get("name");
+        String email = (String) kakaoAccount.get("email");
 
         log.info("email: " + email);
 
@@ -81,6 +80,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         Map<String, Object> claims = new HashMap<>();
         String accessToken = jwtUtil.createToken(claims, 60);
         String refreshToken = jwtUtil.createToken(claims, 1440);
+        claims.put("email",email);
+
 
         SocialCustomerDTO customerDTO = new SocialCustomerDTO();
         customerDTO.setName(principalName);
@@ -88,6 +89,18 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         customerDTO.setEmail(email);
         customerDTO.setAccessToken(accessToken);
         customerDTO.setRefreshToken(refreshToken);
+
+        customerDTO.addAttribute("email", email);
+        customerDTO.addAttribute("accessToken", accessToken);
+        customerDTO.addAttribute("refreshToken", accessToken);
+
+        log.info("=====================");
+        log.info("customerDTO: " + customerDTO);
+
+        //SocialCustomerDTO customUser = new SocialCustomerDTO(oAuth2User.getAuthorities(),oAuth2User.getAttributes(),userRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName());
+
+//        customUser.addAttribute("accessToken", accessToken);
+//        customUser.addAttribute("refreshToken", refreshToken);
 
         return customerDTO;
     }

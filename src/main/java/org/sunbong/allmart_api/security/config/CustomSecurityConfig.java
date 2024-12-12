@@ -1,11 +1,8 @@
     package org.sunbong.allmart_api.security.config;
 
     import lombok.RequiredArgsConstructor;
-    import lombok.extern.log4j.Log4j2;
     import org.springframework.context.annotation.Bean;
     import org.springframework.context.annotation.Configuration;
-    import org.springframework.security.authentication.AuthenticationManager;
-    import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
     import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
     import org.springframework.security.config.annotation.web.builders.HttpSecurity;
     import org.springframework.security.config.http.SessionCreationPolicy;
@@ -16,29 +13,27 @@
     import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest;
     import org.springframework.security.web.SecurityFilterChain;
     import org.springframework.security.web.authentication.AuthenticationFailureHandler;
-    import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
     import org.springframework.web.cors.CorsConfiguration;
     import org.springframework.web.cors.CorsConfigurationSource;
     import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
     import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
     import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-    import org.sunbong.allmart_api.social.config.CustomAuthenticationFailureHandler;
-    import org.sunbong.allmart_api.social.config.CustomAuthenticationSuccessHandler;
+    import org.sunbong.allmart_api.social.config.CustomerOAuth2AuthenticationSuccessHandler;
     import org.sunbong.allmart_api.social.service.CustomOAuth2UserService;
 
     import java.util.List;
 
-    @Log4j2
     @Configuration
     @EnableMethodSecurity(prePostEnabled = true)
     @RequiredArgsConstructor
     public class CustomSecurityConfig implements WebMvcConfigurer {
 
-        private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 
-        private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
+        private final AuthenticationFailureHandler customAuthenticationFailureHandler;
 
         private final CustomOAuth2UserService customOAuth2UserService;
+
+        private final CustomerOAuth2AuthenticationSuccessHandler customerOAuth2AuthenticationSuccessHandler;
 
         @Bean
         public PasswordEncoder passwordEncoder() {
@@ -46,7 +41,7 @@
         }
 
         @Bean
-        public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        public SecurityFilterChain filterChain(HttpSecurity http, CustomOAuth2UserService customOAuth2UserService) throws Exception {
 
             http.formLogin(config -> config.disable());
 
@@ -58,32 +53,37 @@
 
             http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
-
-
-
             // 카카오톡 로그인 엔드포인트 설정
             http.oauth2Login(oauth2 -> oauth2
-                    .loginPage("http://localhost:5173/customer/signIn/") // 사용자 정의 로그인 페이지 설정 (필요하면 변경)"
-                    .successHandler(customAuthenticationSuccessHandler)
+                    .loginPage("http://localhost:5173/customer/signin") // 사용자 정의 로그인 페이지 설정 (필요하면 변경)"
+                    //.loginPage("/api/v1/customer")
+                    //.defaultSuccessUrl("http://localhost:5173", true) // 로그인 성공 시 이동할 URL
+                    .successHandler(customerOAuth2AuthenticationSuccessHandler)
+                    //.defaultSuccessUrl("/api/v1/customer/signIn", true) // 로그인 성공 시 이동할 URL
+                    .failureUrl("http://localhost:5173/login/failure") // 로그인 실패 시 이동할 URL
                     .failureHandler(customAuthenticationFailureHandler)
                     .authorizationEndpoint(auth -> auth
                             .baseUri("/oauth2/authorization")) // 기본 OAuth2 인증 URL
                     .tokenEndpoint(token -> token
-                            .accessTokenResponseClient(customAccessTokenResponseClient())) // Access Token 처리
+                            .accessTokenResponseClient(customAccessTokenResponseClient  ())) // Access Token 처리
                     .userInfoEndpoint(userInfo  -> userInfo
-                            .userService(customOAuth2UserService) // 사용자 정보 처리 서비스
+                           .userService(customOAuth2UserService) // 사용자 정보 처리 서비스
 
                     ));
+            //
+            http.oauth2Login(oauth -> oauth
+                    .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService)));
+
+
 
 //            http.authorizeHttpRequests(authorize -> authorize
 //                    .requestMatchers("/api/v1/customer/makeToken","/api/v1/customer/signUp/phoneNumber/**",
 //                            "/api/v1/qrcode/signUp", "/api/v1/customer/signIn", "/api/v1/customer/**","/customer/**","/login/**","/oauth2/**", "/customer/signin","/eror").permitAll()
 //                    .requestMatchers("/api/v1/**").hasRole("USER") // /api/v1/** 경로는 관리자 권한만 접근 가능
-//
+//x x
 //
 //                    .anyRequest().authenticated()
 //            );
-
             http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
     //        http.authorizeHttpRequests(authorize -> authorize
@@ -126,14 +126,5 @@
             return new DefaultAuthorizationCodeTokenResponseClient();
         }
 
-        @Bean
-        public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-            return config.getAuthenticationManager();
-        }
-
-
-
-
 
     }
-

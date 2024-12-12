@@ -7,12 +7,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+
 @Data
-public class SocialCustomerDTO implements UserDetails, OAuth2User {
+public class    SocialCustomerDTO implements UserDetails, OAuth2User {
 
     private Long id;
     private String email;
@@ -68,5 +70,12 @@ public class SocialCustomerDTO implements UserDetails, OAuth2User {
     @Override
     public String getName() {
         return this.email;
+    }
+
+    public void addAttribute(String key, Object value) {
+        if (this.props == null) {
+            this.props = new HashMap<>();
+        }
+        this.props.put(key, value);
     }
 }
