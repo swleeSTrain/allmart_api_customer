@@ -312,6 +312,19 @@ public class CustomerService {
         }
     }
 
+    public CustomerResponseDTO findByEmail(String email) {
+        Customer customer = customerRepository.findByEmail(email);
+        if (customer == null) {
+            throw new NoSuchElementException();
+        }
+        return CustomerResponseDTO.builder()
+                .loyaltyPoint(customer.getLoyaltyPoints())
+                .email(customer.getEmail())
+                .name(customer.getName())
+                .phoneNumber(customer.getPhoneNumber())
+                .build();
+    }
+
 
 
 

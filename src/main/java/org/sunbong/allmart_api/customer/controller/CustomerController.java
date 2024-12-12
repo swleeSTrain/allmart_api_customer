@@ -230,6 +230,7 @@ public class CustomerController {
 
 
 
+
     // 새로운 고객 및 주소 등록 로직
     @PostMapping("/register")
     public ResponseEntity<String> registerCustomer(@RequestBody CustomerRegisterDTO customerRegisterDTO) {

@@ -10,4 +10,6 @@ public class CustomerTokenResponseDTO {
     private String phoneNumber;
     private String accessToken;
     private String refreshToken;
+    private String name;
+    private int loyaltyPoints;
 }
