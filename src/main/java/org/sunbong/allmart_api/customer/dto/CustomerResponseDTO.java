@@ -12,11 +12,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CustomerResponseDTO {
 
-    private Long customerID;
-    private Long martID;  // 하나의 마트 ID만 반환
-    private String phoneNumber;
-    private String email;
-    private String name;
-    private int loyaltyPoint;
+    public String phoneNumber;
+    public String email;
+    public String name;
+    public int loyaltyPoint;
 
 }

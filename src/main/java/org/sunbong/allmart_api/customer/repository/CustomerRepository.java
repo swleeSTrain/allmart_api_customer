@@ -1,9 +1,11 @@
 package org.sunbong.allmart_api.customer.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.sunbong.allmart_api.customer.domain.Customer;
+import org.sunbong.allmart_api.customer.dto.CustomerUpdateDTO;
 import org.sunbong.allmart_api.customer.repository.search.CustomerSearch;
 
 import java.util.List;
@@ -19,4 +21,7 @@ public interface CustomerRepository extends JpaRepository<Customer, Long>, Custo
     void deleteByPhoneNumber(String phoneNumber);
 
     boolean existsByPhoneNumber(String phoneNumber);
+
+    Customer findByEmail(String email);
+
 }
