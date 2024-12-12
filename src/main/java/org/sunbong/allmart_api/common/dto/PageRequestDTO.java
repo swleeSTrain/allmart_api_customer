@@ -8,6 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.util.Set;
+
 @Data
 @SuperBuilder
 @AllArgsConstructor
@@ -30,4 +32,6 @@ public class PageRequestDTO {
     private Long categoryID;  // 카테고리 검색 필드 추가
 
     private String sort; // 정렬 조건 추가
+
+    private Set<String> tags; // **태그 검색 필드 추가**
 }

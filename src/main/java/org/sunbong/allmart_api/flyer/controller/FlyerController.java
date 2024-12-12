@@ -52,7 +52,7 @@ public class FlyerController {
         log.info("Registering flyer: {}", flyerAddDTO);
         try {
             Long flyerId = flyerService.register(flyerAddDTO);
-            return ResponseEntity.ok(flyerId);
+               return ResponseEntity.ok(flyerId);
         } catch (Exception e) {
             log.error("Error registering flyer: ", e);
             return ResponseEntity.badRequest().build();

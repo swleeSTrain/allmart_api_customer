@@ -22,6 +22,8 @@
     import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
     import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
     import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+    import org.sunbong.allmart_api.social.config.CustomAuthenticationFailureHandler;
+    import org.sunbong.allmart_api.social.config.CustomAuthenticationSuccessHandler;
     import org.sunbong.allmart_api.social.service.CustomOAuth2UserService;
 
     import java.util.List;
@@ -32,9 +34,9 @@
     @RequiredArgsConstructor
     public class CustomSecurityConfig implements WebMvcConfigurer {
 
-        private final AuthenticationFailureHandler customAuthenticationFailureHandler;
+        private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 
-        private final AuthenticationSuccessHandler customAuthenticationSuccessHandler;
+        private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
 
         private final CustomOAuth2UserService customOAuth2UserService;
 
@@ -61,9 +63,8 @@
 
             // 카카오톡 로그인 엔드포인트 설정
             http.oauth2Login(oauth2 -> oauth2
-                    .loginPage("http://localhost:5173/customer/signin") // 사용자 정의 로그인 페이지 설정 (필요하면 변경)"
-                    //.successHandler(customAuthenticationSuccessHandler)
-                    .defaultSuccessUrl("http://localhost:5173/", true)
+                    .loginPage("http://localhost:5173/customer/signIn/") // 사용자 정의 로그인 페이지 설정 (필요하면 변경)"
+                    .successHandler(customAuthenticationSuccessHandler)
                     .failureHandler(customAuthenticationFailureHandler)
                     .authorizationEndpoint(auth -> auth
                             .baseUri("/oauth2/authorization")) // 기본 OAuth2 인증 URL
@@ -74,17 +75,15 @@
 
                     ));
 
+//            http.authorizeHttpRequests(authorize -> authorize
+//                    .requestMatchers("/api/v1/customer/makeToken","/api/v1/customer/signUp/phoneNumber/**",
+//                            "/api/v1/qrcode/signUp", "/api/v1/customer/signIn", "/api/v1/customer/**","/customer/**","/login/**","/oauth2/**", "/customer/signin","/eror").permitAll()
+//                    .requestMatchers("/api/v1/**").hasRole("USER") // /api/v1/** 경로는 관리자 권한만 접근 가능
+//
+//
+//                    .anyRequest().authenticated()
+//            );
 
-
-
-            http.authorizeHttpRequests(authorize -> authorize
-                    .requestMatchers("/api/v1/customer/makeToken","/api/v1/customer/signUp/phoneNumber/**",
-                            "/api/v1/qrcode/signUp", "/api/v1/customer/signIn", "/api/v1/customer/**","/customer/**","/login/**","/oauth2/**", "/customer/signin","/eror").permitAll()
-                    .requestMatchers("/api/v1/**").hasRole("USER") // /api/v1/** 경로는 관리자 권한만 접근 가능
-
-
-                    .anyRequest().authenticated()
-            );
             http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
     //        http.authorizeHttpRequests(authorize -> authorize
@@ -131,22 +130,6 @@
         public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
             return config.getAuthenticationManager();
         }
-
-
-
-
-
-//        @Bean
-//        public DefaultOAuth2UserService customOAuth2UserService() {
-//            return new DefaultOAuth2UserService() {
-//                @Override
-//                public OAuth2User loadUser(OAuth2UserRequest userRequest) {
-//                    OAuth2User oAuth2User = super.loadUser(userRequest);
-//                    System.out.println("User Attributes: " + oAuth2User.getAttributes());
-//                    return oAuth2User;
-//                }
-
-
 
 
 

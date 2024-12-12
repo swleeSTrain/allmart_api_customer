@@ -45,7 +45,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             principalName = "defaultPrincipal"; // 기본값 설정
         }
 
-
         java.util.Map<String, Object>  paramMap = oAuth2User.getAttributes();
 
         paramMap.forEach((k,v) -> {
