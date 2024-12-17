@@ -36,20 +36,23 @@ public class CustomerOAuth2AuthenticationSuccessHandler implements Authenticatio
 //            kakaoAccount = (Map<String, Object>) attributes.get("email");
 //        }
 
-        // 이메일
+        // 쿼리 파라미터 데이터
         String email = attributes != null ? (String) attributes.get("email") : null;
-
-
+        Long customerID = attributes != null ? (Long) attributes.get("customerID") : null;
+        String frag = "kakao";
         // JWT 생성 및 리다이렉트
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("email", email);
-        String accessToken = jwtUtil.createToken(claims, 60);
-        String refreshToken = jwtUtil.createToken(claims, 1440);
+//        Map<String, Object> claims = new HashMap<>();
+//        claims.put("email", email);
+//        claims.put("customerID", customerID);
+//        String accessToken = jwtUtil.createToken(claims, 60);
+//        String refreshToken = jwtUtil.createToken(claims, 1440);
 
         String redirectUrl = UriComponentsBuilder.fromUriString("http://localhost:5173/customer/update")
                 .queryParam("email", email)
-                .queryParam("accessToken", accessToken)
-                .queryParam("accessToken", refreshToken)
+                .queryParam("customerID", customerID)
+                .queryParam("frag", frag)
+//                .queryParam("accessToken", accessToken)
+//                .queryParam("accessToken", refreshToken)
                 .build().toUriString();
 
         response.sendRedirect(redirectUrl);

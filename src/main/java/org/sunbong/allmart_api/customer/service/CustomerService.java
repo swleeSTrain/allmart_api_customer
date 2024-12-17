@@ -173,13 +173,15 @@ public class CustomerService {
     // 고객 정보 수정
     public Optional<Customer> update(CustomerUpdateDTO updateDTO) {
         // 고객 조회
-        Optional<Customer> customerOptional = findByPhoneNumber(updateDTO.getPhoneNumber());
+        Optional<Customer> customerOptional = customerRepository.findById(updateDTO.getCustomerID());
         Customer customer = customerOptional.orElseThrow(() -> new NoSuchElementException("Customer not found"));
 
         // 수정된 고객 저장
         Customer updatedCustomer = customer.toBuilder()
                 .phoneNumber(updateDTO.getPhoneNumber())
                 .name(updateDTO.getName())
+                .email(updateDTO.getEmail())
+                .customerID(updateDTO.getCustomerID())
                 .build();
         customerRepository.save(updatedCustomer);
         return Optional.of(updatedCustomer);
@@ -326,6 +328,22 @@ public class CustomerService {
     }
 
 
+    public CustomerResponseDTO getCustomer (Long id){
+        Optional<Customer> customer = customerRepository.findById(id);
+        if(customer.isEmpty()) {
+
+            return null;
+        }
+        CustomerResponseDTO customerResponseDTO = CustomerResponseDTO.builder()
+                .name(customer.get().getName())
+                .email(customer.get().getEmail())
+                .phoneNumber(customer.get().getPhoneNumber())
+                .customerID(customer.get().getCustomerID())
+                .build();
+
+        return customerResponseDTO;
+
+    }
 
 
 }

@@ -68,13 +68,16 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         log.info("-----------------------------------------------------");
         log.info("-----------------------------------------------------");
 
+
+
         if(customerRepository.findByEmail(email) == null){
-            customerRepository.save(Customer.builder()
+                customerRepository.save(Customer.builder()
                     .email(email)
                     .loginType(CustomerLoginType.SOCIAL)
                     .build());
 
         }
+
 
         // JWT 토큰 생성
         Map<String, Object> claims = new HashMap<>();
@@ -90,10 +93,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         customerDTO.setAccessToken(accessToken);
         customerDTO.setRefreshToken(refreshToken);
 
+
         customerDTO.addAttribute("email", email);
         customerDTO.addAttribute("accessToken", accessToken);
         customerDTO.addAttribute("refreshToken", accessToken);
-
+        customerDTO.addAttribute("customerID", customerRepository.findByEmail(email).getCustomerID());
         log.info("=====================");
         log.info("customerDTO: " + customerDTO);
 

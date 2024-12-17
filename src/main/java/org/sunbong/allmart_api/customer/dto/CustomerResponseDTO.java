@@ -15,6 +15,7 @@ public class CustomerResponseDTO {
     public String phoneNumber;
     public String email;
     public String name;
+    Long customerID;
     public int loyaltyPoint;
 
 }
