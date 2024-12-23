@@ -18,6 +18,7 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
         // React 로그인 페이지로 리디렉션
         // 실제 서비스하는 도메인 주소를 넣어야함.
         //response.sendRedirect("");
-            response.sendRedirect("http://localhost:5173/customer/signin");
+        String martID = request.getParameter("martID");
+        response.sendRedirect("http://localhost:5173/" + martID +"/customer/signin");
         }
 }

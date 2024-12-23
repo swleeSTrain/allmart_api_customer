@@ -58,9 +58,14 @@
                     .loginPage("http://localhost:5173/customer/signin") // 사용자 정의 로그인 페이지 설정 (필요하면 변경)"
                     //.loginPage("/api/v1/customer")
                     //.defaultSuccessUrl("http://localhost:5173", true) // 로그인 성공 시 이동할 URL
-                    .successHandler(customerOAuth2AuthenticationSuccessHandler)
+                    //.successHandler(customerOAuth2AuthenticationSuccessHandler)
+                    .successHandler((request, response, authentication) -> {
+                        // 인증 성공 시 React로 리디렉션
+                        String redirectUrl = "http://localhost:5173/oauth/kakao";
+                        response.sendRedirect(redirectUrl);
+                    })
                     //.defaultSuccessUrl("/api/v1/customer/signIn", true) // 로그인 성공 시 이동할 URL
-                    .failureUrl("http://localhost:5173/login/failure") // 로그인 실패 시 이동할 URL
+                    //.failureUrl("http://localhost:5173/login/failure") // 로그인 실패 시 이동할 URL
                     .failureHandler(customAuthenticationFailureHandler)
                     .authorizationEndpoint(auth -> auth
                             .baseUri("/oauth2/authorization")) // 기본 OAuth2 인증 URL
@@ -71,10 +76,14 @@
 
                     ));
             //
-            http.oauth2Login(oauth -> oauth
-                    .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService)));
+//            http.oauth2Login(oauth -> oauth
+//                    .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService)));
 
-
+//              http.oauth2Login(oauth -> oauth
+//                              .successHandler((request, response, authentication) -> {
+//                                  // 인증 성공 후 프론트엔드로 리다이렉트
+//                                  response.sendRedirect("http://localhost:5173/oauth/kakao");
+//                              }));
 
 //            http.authorizeHttpRequests(authorize -> authorize
 //                    .requestMatchers("/api/v1/customer/makeToken","/api/v1/customer/signUp/phoneNumber/**",
@@ -84,7 +93,6 @@
 //
 //                    .anyRequest().authenticated()
 //            );
-            http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
     //        http.authorizeHttpRequests(authorize -> authorize
     //                .requestMatchers("/uploads/**").permitAll() // /uploads/** 경로 허용
@@ -102,7 +110,8 @@
 
             CorsConfiguration corsConfiguration = new CorsConfiguration();
 
-            corsConfiguration.setAllowedOriginPatterns(List.of("*")); // 어디서든 허락
+            //corsConfiguration.setAllowedOriginPatterns(List.of("http://localhost:5173")); // 어디서든 허락
+            corsConfiguration.setAllowedOrigins(List.of("http://localhost:5173"));
             corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"));
             corsConfiguration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
             corsConfiguration.setAllowCredentials(true);
