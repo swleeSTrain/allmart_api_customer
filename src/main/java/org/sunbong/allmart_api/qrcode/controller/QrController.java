@@ -24,7 +24,7 @@ public class QrController {
         log.info("QR 코드 생성 요청 수신: martID = {}", martID);
 
         // martID를 포함한 URL 생성
-        String customUrl = "https://www.allmartservice.shop/" + martID;
+        String customUrl = "https://allmartservice.shop/" + martID;
         log.info("생성된 URL: {}", customUrl);
 
         // QR 코드 생성 서비스 호출

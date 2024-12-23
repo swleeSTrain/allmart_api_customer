@@ -4,5 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.sunbong.allmart_api.flyer.domain.Flyer;
 import org.sunbong.allmart_api.flyer.repository.search.FlyerSearch;
 
-public interface FlyerRepository extends JpaRepository<Flyer, Long>, FlyerSearch {
+public interface FlyerRepository extends JpaRepository<Flyer, Long>, FlyerSearch{
+
 }
