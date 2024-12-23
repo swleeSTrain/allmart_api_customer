@@ -1,7 +1,6 @@
 package org.sunbong.allmart_api.customer.domain;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.GrantedAuthority;
@@ -26,7 +25,6 @@ public class Customer extends BaseEntity implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "customerID")
     private Long customerID;
-
 
     @Column(columnDefinition = "CHAR(11)", unique = true)
     private String phoneNumber;

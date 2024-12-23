@@ -1,7 +1,6 @@
 package org.sunbong.allmart_api.customer.dto;
 
 
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,10 +12,10 @@ import lombok.NoArgsConstructor;
 @Builder
 public class CustomerUpdateDTO {
 
+    Long CustomerID;
     String name;
-
-    @NotNull(message = "Phone number cannot be null")
     String phoneNumber;
+    String email;
 
 
 }

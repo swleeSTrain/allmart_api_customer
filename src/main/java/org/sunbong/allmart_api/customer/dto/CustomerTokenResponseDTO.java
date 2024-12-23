@@ -7,9 +7,11 @@ import lombok.Data;
 @Data
 public class CustomerTokenResponseDTO {
     private String email;
+    private Long customerId;
     private String phoneNumber;
     private String accessToken;
     private String refreshToken;
+    private Long martID;
     private String name;
     private int loyaltyPoints;
 }

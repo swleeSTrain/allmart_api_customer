@@ -3,28 +3,34 @@ spring:
     name: allmart_api
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
+    #    url: jdbc:mariadb://localhost:13306/test
     url: ${DATABASE_URL}
-    #   url: jdbc:mariadb://10.10.10.54:13306/vgdb
     username: ${DATABASE_USERNAME}
     password: ${DATABASE_PASSWORD}
+
     hikari:
       minimum-idle: 2
-      maximum-pool-size: 5
-      connection-timeout: 5000
+      maximum-pool-size: 10
+      connection-timeout: 10000
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
 
   jpa:
     hibernate:
+      connection.isolation: 2 # READ COMMITTED
       ddl-auto: update
       dialect: org.hibernate.dialect.MariaDB103Dialect
     show-sql: true
     properties:
       hibernate:
         format_sql: true
+
   servlet:
     multipart:
       max-file-size: 5MB
       max-request-size: 20MB
-      location: ${org.allmart_api.upload.path}  # 업로드 경로를 org.sunbong.upload.path와 연동
   config:
     import: optional:file:.env[.properties]
 
@@ -47,26 +53,69 @@ spring:
             user-info-uri: https://kapi.kakao.com/v2/user/me
             user-name-attribute: id
 
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS} # 환경 변수 사용
+    consumer:
+      group-id: delivery-service-group
+      auto-offset-reset: earliest
+      enable-auto-commit: true
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      properties:
+        fetch.max.bytes: 200000000 # 약 200MB
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      properties:
+        max.request.size: 200000000 # 약 200MB
+    admin:
+      fail-fast: true
+    properties:
+      max.poll.records: 500
+    topics:
+      dlq: vgdb.vgdb.tbl_outbox.dlq
+    streams:
+      application-id: delivery-stream-app
+      state-dir: /data/kafka-streams
+      properties:
+        commit.interval.ms: 100
+        statestore.cache.max.bytes: 10485760
+        replication.factor: 1
+        default.key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+        default.value.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
 org:
   allmart_api:
     accessTime: 60
     refreshTime: 1440
     alwaysNew: true
-    upload:
-      path: ${UPLOAD_PATH}
+
 logging:
   level:
     org:
-      springframework.security: DEBUG
       hibernate:
         SQL: INFO
         type:
           descriptor:
             sql:
-              BasicBinder: TRACE
-
+              BasicBinder:
+    com:
+      amazonaws:
+        util:
+          EC2MetadataUtils: error
 kakao:
   KAKAO_MAP_API_KEY: ${KAKAO_MAP_API_KEY}
   KAKAO_GEO_API_KEY: ${KAKAO_GEO_API_KEY}
 toss:
   SECRET_KEY: ${TOSS_SECRET_KEY}
+
+cloud:
+  aws:
+    credentials:
+      accessKey: ${AWS_ACCESS_KEY}
+      secretKey: ${AWS_SECRET_KEY}
+    s3:
+      bucket: ${AWS_S3_BUCKET}
+    region:
+      static: ${AWS_REGION}
+    stack:
+      auto: false

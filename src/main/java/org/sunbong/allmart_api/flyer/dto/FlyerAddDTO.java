@@ -26,4 +26,5 @@ public class FlyerAddDTO {
 
     private Set<String> audioURL;
     private List<FlyerImage> attachImages;
+    private Long martId;
 }

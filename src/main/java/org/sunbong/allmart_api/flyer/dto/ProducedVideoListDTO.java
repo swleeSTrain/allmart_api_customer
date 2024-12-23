@@ -20,4 +20,5 @@ public class ProducedVideoListDTO {
     private String link;
     private String originalFile;
     private String memo;
+    private Long flyerId;
 }
